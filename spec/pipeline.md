@@ -1,0 +1,152 @@
+# Pipeline
+
+Where every artifact physically lives, and how data moves between systems.
+
+`glossary.md` says what the datasets mean. `data.md` gives their specifications
+and how the training set was built. This file gives addresses.
+
+## Systems
+
+Three places hold parts of this project.
+
+**Earth Engine** holds the source imagery, the labeling interface, every
+intermediate asset, and the labels themselves. Everything produced so far lives
+here.
+
+**The cluster** — UMD Zartan or Nexus — is where training runs. Nothing is there
+yet.
+
+**This repository** holds the specification, the research log, and the labeling
+code that produced the dataset.
+
+Data currently moves in one direction only: public datasets into Earth Engine,
+through the labeling scripts, into project assets. The path out of Earth Engine
+and onto the cluster does not exist yet.
+
+## Earth Engine
+
+**Project:** `projects/irrigation-mapping-agwa`
+
+All project assets sit under `projects/irrigation-mapping-agwa/assets/`. Paths
+below are relative to that prefix.
+
+### Source datasets
+
+| Collection ID | Used for |
+|---|---|
+| `USDA/NAIP/DOQQ` | Aerial imagery labelers viewed; the model's primary input |
+| `USDA/NASS/CDL` | Field boundary derivation and crop class |
+| `TIGER/2018/States` | Maryland boundary, filtered to `NAME == 'Maryland'` |
+
+### Produced assets
+
+| Asset | Contents |
+|---|---|
+| `center_pivot_irrigation_trusses` | The legacy truss map. An input, not produced here. |
+| `assignments/truss_point_assignments_md_v1` | Positive labeling assignments — points, labeler, queue position |
+| `assignments/negative_field_assignments_md_v1` | Negative candidate assignments — fields, labeler, queue position |
+| `cdl_fields_md_2022` | All CDL-derived field polygons for Maryland |
+| `cdl_fields_positive_md_2022` | Fields promoted to positive at the overlap threshold |
+| `cdl_fields_excluded_md_2022` | Every field touching a hand-drawn label; the negative no-sample zone |
+| `training_fields_md_2022` | The merged labeled training set. The pipeline's output. |
+
+### Per-labeler folders
+
+Individual labels are stored one asset per decision, under four folder trees.
+These hold hundreds of assets and are described by convention rather than
+enumerated:
+
+| Path pattern | Written by |
+|---|---|
+| `labels/<user>/point_<id>_label` | A drawn positive polygon |
+| `progress/<user>/point_<id>_completed` and `_skipped` | Positive labeling progress marker |
+| `labels_negative/<user>/field_<id>_confirmed` | A confirmed negative field |
+| `progress_negative/<user>/field_<id>_confirmed` and `_rejected` | Negative labeling progress marker |
+
+`<user>` is a lowercase first name. Progress markers carry the labeler's written
+note, which for skips and rejects is a required free-text reason — the raw
+material for testing `A-04`.
+
+### Naming conventions
+
+Assets carry a region and either a year or a version: `_md_2022` for anything
+tied to the 2022 label year, `_md_v1` for assignment tables that could be
+regenerated with different parameters. New assets should follow the same
+pattern rather than overwrite an existing name.
+
+## Provenance chain
+
+The labeling code is vendored in this repository at `gee/labeling/`, unmodified.
+It runs in the Earth Engine Code Editor, not locally. Scripts are numbered in
+their header comments; the filenames are not ordered, so the mapping is:
+
+| # | File | Produces |
+|---|---|---|
+| 1 | `datapoint_assignment.js` | `assignments/truss_point_assignments_md_v1` |
+| 2 | `labeling.js` | `labels/<user>/…`, `progress/<user>/…` |
+| 3 | `build_cdl_fields.js` | `cdl_fields_md_2022` |
+| 4 | `explore_overlap.js` | Nothing. Diagnostic — produced the overlap threshold. |
+| 5 | `promote_positives.js` | `cdl_fields_positive_md_2022`, `cdl_fields_excluded_md_2022` |
+| 6 | `negative_assignment.js` | `assignments/negative_field_assignments_md_v1` |
+| 7 | `labeling_negative.js` | `labels_negative/<user>/…`, `progress_negative/<user>/…` |
+| 8 | `merge_training_set.js` | `training_fields_md_2022` |
+
+`view_assignments.js` is an unnumbered utility for viewing assignments on a map.
+
+Scripts 2 and 7 are per-labeler: each person set `USER` at the top and ran their
+own queue. Both batch up to ten decisions before requiring the Earth Engine
+Tasks tab to be run.
+
+## Reproducibility, and an unbacked-up asset
+
+Scripts 1, 3, 5, 6 and 8 are deterministic. They read published datasets and
+project assets, use a fixed random seed of 42 wherever sampling occurs, and
+re-running them reproduces their outputs exactly.
+
+**Scripts 2 and 7 are not reproducible at all.** They record roughly 1500 human
+decisions made by seven people. Nothing regenerates them.
+
+The consequence is the most important operational fact about this project:
+
+> **The hand-drawn labels are irreplaceable and currently exist in exactly one
+> place.** Every other asset can be rebuilt from published data and the vendored
+> scripts. The labels cannot. There is no copy outside the Earth Engine project.
+> If access changes, the project is deleted, or an asset is overwritten, that
+> work is gone and can only be recovered by redoing all of it.
+
+Exporting the labels is therefore a backup task before it is anything else, and
+should not wait on decisions about training data formats.
+
+## Getting data out of Earth Engine
+
+**Not yet decided.** The route — Drive, Cloud Storage, or direct download — and
+the format for both label tables and imagery are open.
+
+One consequence reaches into the model: if per-field image chips are exported,
+tiling can happen server-side in Earth Engine or locally after export. Those are
+different pipelines with different storage footprints and iteration speeds. The
+fork is described in `model.md` and is settled by whichever export path is
+chosen.
+
+Sizing the total chip volume at NAIP resolution for the field count involved is
+the input that decides this, and it is not yet known — the field counts
+themselves are unmeasured (`data.md`).
+
+## Training environment
+
+Training targets UMD's Zartan or Nexus clusters. Dr. Humber's HPC lab is also
+available.
+
+**Not yet decided:** which cluster, how data is staged onto it, environment and
+dependency management, and whether training runs interactively or as scheduled
+batch jobs. These follow from the export decision above and from the storage
+each cluster makes available.
+
+## Repository layout
+
+`spec/` holds the specification. `research-log/` holds dated entries.
+`gee/labeling/` holds the vendored Earth Engine code, which is a record of how
+the dataset was made and is not modified in place — changes to labeling would
+be new scripts, not edits to these.
+
+Layout for training code is not yet established.
