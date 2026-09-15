@@ -1,0 +1,22 @@
+# Imagery and other large artifacts never enter git.
+# Chips live in object storage; see spec/pipeline.md.
+*.tif
+*.tiff
+*.jp2
+*.npy
+*.npz
+*.zip
+data/chips/
+data/cache/
+results/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
