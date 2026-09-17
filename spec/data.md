@@ -22,7 +22,12 @@ purposes: deriving field boundaries, and recording the crop class of each field.
 **Legacy truss map** — A pre-existing manual inventory of center-pivot
 irrigation systems covering the Mid-Atlantic, including the Eastern Maryland
 shore. Used to seed positive labeling assignments, and again at the end as a
-backstop against mislabeled negatives.
+backstop against mislabeled negatives. **It is incomplete**: 19 truss-bearing
+fields surfaced in the negative queue, which is drawn only from fields no
+hand-drawn label touches, so a truss reaching it is one the legacy map never
+recorded (`2026-09-17-negative-pass-rejections`). This bounds both roles — it
+cannot seed the positives it does not contain, and it cannot backstop against
+them either.
 
 **TIGER** — US Census state boundaries; the Maryland outline used to clip every
 step of the pipeline.
@@ -86,8 +91,33 @@ examples lost.
 
 ## Composition
 
-**Not yet measured.** The labeling is complete, but the results live in Earth
-Engine assets and have not been exported and counted.
+**Partly measured.** The labels are exported and backed up
+(`2026-09-15-labeler-skip-rate-heterogeneity`), so the counts of human decisions
+are known. Field counts are not, because promotion sits between the two.
+
+What is known:
+
+| | count |
+|---|---|
+| Hand-drawn positive polygons | 693 |
+| Positive points skipped | 87 |
+| Confirmed negative fields | 947 |
+| Negative candidates rejected | 53 |
+
+The positive target was 700 — 100 per labeler. One labeler exhausted a full
+120-point queue at a 22.5% skip rate without reaching 100.
+
+Three qualifications on the negative count. One confirmed negative
+(`field_450`) has a progress marker but no label asset, lost to a partially
+failed batch export. One (`field_343`) was rejected and then confirmed eight
+minutes later with a note reading "not a land", and is currently class 0. And
+19 of the 53 rejections were rejected *because a truss was visible*
+(`2026-09-17-negative-pass-rejections`); those fields are in neither class.
+
+**What promotion still hides.** 693 hand-drawn polygons do not yield 693
+positive fields. Each is promoted onto whatever CDL fields it overlaps by at
+least the threshold, which can be several fields or none, so the positive field
+count is a separate number and remains unmeasured.
 
 Counts cannot be derived from the assignment design, because the pipeline
 transforms them at two points: promotion keeps only fields at or above the
@@ -96,21 +126,25 @@ The assignment targets — 100 positive points per labeler, 1000 negative
 candidates weighted across labelers — bound the result from above but do not
 determine it.
 
-What needs measuring, once exported:
+What still needs measuring:
 
-- Positive and negative field counts, and the resulting class ratio
-- Completed versus skipped or rejected assignments, per labeler
+- Positive and negative **field** counts, and the resulting class ratio
 - Geographic distribution of each class, by county and by physiographic region
 - Field area distribution, and crop class composition, per class
 
 These numbers will be filled in from a research-log entry that records the
-export and the measurement.
+measurement.
 
 ## Known biases and limitations
 
 **Positives are Eastern Shore; negatives are statewide.** The legacy truss map
 covers the Mid-Atlantic — effectively the Eastern Shore in Maryland — so every
-positive comes from there. Negatives were drawn from CDL fields across the whole
+positive comes from there. The one exception proves the constraint is the
+sampling frame rather than the geography: 19 truss-bearing fields were found
+during the negative pass, which drew uniformly from statewide CDL fields, and
+those are the only positives the project has collected by a process that does
+not inherit the legacy map's footprint. They were discarded rather than promoted
+(`2026-09-17-negative-pass-rejections`). Negatives were drawn from CDL fields across the whole
 state, including the predominantly rainfed west. Class therefore correlates with
 region, and a model can score well by learning soil color, field geometry, tree
 lines, or imagery flight date instead of learning what a truss looks like. This
@@ -145,9 +179,20 @@ fragments a real field into pieces, or merges it with a neighbor, no piece
 clears the threshold and the field is lost. Positives are therefore biased
 toward fields whose true boundaries the CDL happens to capture cleanly.
 
-**Skips are not random.** Labelers skipped points they found unusable. If
-difficulty drove those decisions, the surviving positives are systematically the
-easier cases, and measured performance will be optimistic relative to production.
+**Skips are not random.** Labelers skipped points they found unusable, and skip
+rate ranges from 2.0% to 22.5% across the seven of them on queues dealt at
+random from one shuffled pool (`2026-09-15-labeler-skip-rate-heterogeneity`).
+Difficulty did drive those decisions, so the surviving positives are
+systematically the easier cases and measured performance is optimistic relative
+to production by an amount not yet quantified. `A-04` is refuted.
+
+**Negatives may contain trusses.** Labelers caught 19 truss-bearing fields in
+the negative queue, at rates from 5.0 to 0.0 per 100 reviewed. The spread implies
+some were missed — on the order of 1-3% of the 947 confirmed negatives, though
+the estimate is underpowered. The automated backstop cannot correct this: it
+drops negatives overlapping the legacy truss map, and these are by construction
+fields the legacy map does not contain
+(`2026-09-17-negative-pass-rejections`).
 
 **Temporal ambiguity.** The NAIP mosaic spans 2021–2023 and different fields are
 observed in different years; mosaic composition across that window was not

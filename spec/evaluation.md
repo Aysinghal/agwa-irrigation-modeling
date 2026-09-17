@@ -26,6 +26,26 @@ by construction, while irrigated fields are a small minority of Coastal Plain
 CDL fields. Any metric sensitive to prevalence must state which prevalence it
 assumes.
 
+### Label defects bound every number reported here
+
+Two measured defects in the labels sit underneath every metric below, and
+neither is correctable by anything in this file.
+
+Positives are easier than the population. Skip rate varied elevenfold across
+labelers on randomly dealt queues, so the marginal pivots that one labeler kept
+and another discarded are absent in a quantity nobody has measured
+(`A-04`, refuted).
+
+Negatives contain an unknown number of positives. Trusses were found in the
+negative queue at rates differing from 5.0 to 0.0 per 100 reviewed, implying
+missed cases on the order of 1-3% (`data.md`).
+
+The two push measured scores in the same direction. Easier positives inflate
+recall; trusses hiding in the negative set turn correct detections into apparent
+false positives and deflate precision. Neither shifts with the choice of metric,
+split, or threshold, so both are stated alongside results rather than corrected
+for. Sizing them is what `Q-05` would buy.
+
 ## Splits
 
 The requirements below are fixed. The specific partitioning scheme that

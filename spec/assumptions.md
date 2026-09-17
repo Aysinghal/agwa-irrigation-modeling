@@ -58,10 +58,18 @@ no way to correct after the fact.
 **How we would find out:** a small overlap round, where several labelers relabel
 the same sample, yields an inter-rater agreement figure. This can be done now —
 the labeling interface still works.
+**Circumstantial evidence against, from two entries:** skip rate on randomly
+dealt queues ranges from 2.0% to 22.5% per labeler
+(`2026-09-15-labeler-skip-rate-heterogeneity`), and truss detection during the
+negative pass ranges from 5.0 to 0.0 per 100 fields reviewed
+(`2026-09-17-negative-pass-rejections`). People who diverge this far on adjacent
+judgments are unlikely to agree closely on the label itself. The status stays
+`untested` regardless: no field was ever labeled twice, so there is no agreement
+to measure and nothing here is a substitute for the round. See `Q-05`.
 
 ### A-04 — Skips were not driven by difficulty
 
-**Status:** untested
+**Status:** refuted by `2026-09-15-labeler-skip-rate-heterogeneity`
 **We assume:** points skipped during positive labeling were skipped for reasons
 uncorrelated with how hard the field is to classify.
 **Why:** skipping was intended for unusable points — bad imagery, a point not on
@@ -70,12 +78,20 @@ a field — rather than for hard calls.
 every metric is optimistic relative to production.
 **How we would find out:** skip reasons were required free text and are stored
 with the progress assets. Read them.
+**What we found:** the reasons pass and the rates do not. Skip notes describe
+the scene rather than the labeler's difficulty, as assumed. But skip rate ranges
+from 2.0% to 22.5% across labelers on queues dealt at random from one shuffled
+pool, so every queue carries the same difficulty distribution by construction.
+An eleven-fold spread can only come from where each person set their threshold,
+which makes the skip decision a judgment about how visible a truss is. The
+consequence under **If wrong** therefore holds, by a mechanism the stated test
+was not built to detect.
 
 ## Field geometry
 
 ### A-05 — CDL polygons approximate real fields well enough
 
-**Status:** untested
+**Status:** refuted by `2026-09-17-negative-pass-rejections`
 **We assume:** a CDL-derived polygon corresponds closely enough to a real
 agricultural field to serve as the unit of prediction.
 **Why:** CDL is the only statewide field-boundary source available without cost
@@ -86,6 +102,13 @@ claim. Downstream aggregation inherits the error.
 **How we would find out:** the overlap-ratio distribution between hand-drawn
 labels and CDL fields already measures this, and is currently used only to set a
 threshold. How tight the upper cluster is constitutes the evidence.
+**What we found:** a more direct measurement arrived first. Of 1001 CDL polygons
+drawn at random for negative labeling, 34 were rejected as not agricultural land
+at all — houses, woods, roads, a solar farm, a sports pitch. That is 3.4%, and a
+lower bound, since rejection was at each labeler's discretion. The rate applies
+to the full inference population, not only to labeling candidates. The
+overlap-ratio test named above remains unrun and would measure a different
+failure: how well CDL boundaries match fields that are genuinely fields.
 
 ### A-06 — The 1-hectare floor does not exclude a meaningful share of irrigated fields
 
