@@ -20,3 +20,9 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Rebuildable Earth Engine exports — deterministic outputs of gee/labeling/,
+# not irreplaceable. Kept locally as Script 9 inputs, not committed.
+data/raw/cdl_fields_md_2022*
+data/raw/cdl_fields_positive_md_2022*
+data/raw/cdl_fields_excluded_md_2022*
