@@ -51,8 +51,9 @@ mike recorded "couldn't find truss".
 
 tien wrote markers for all 120 assigned points — the full 100 target plus the
 entire 20-point reserve — and finished with 93 labels. Every other labeler
-reached 100 without exhausting their reserve. The positive set therefore holds
-693 fields, not 700.
+reached 100 without exhausting their reserve. The hand-drawn positive set
+therefore holds 693 polygons rather than the 700 the assignment targeted. How
+many CDL fields those promote to is a different number and is not measured here.
 
 Reject rates on the negative queue span 2.5% to 10.0% across the same seven
 people, on 1001 markers.
@@ -89,9 +90,10 @@ labeler-dependent in a way `A-03` assumes it is not.
 - `A-03` — unchanged in status, but this is indirect evidence against it. Seven
   people diverging on the skip decision are unlikely to agree perfectly on the
   label decision.
-- `data.md` — the composition section takes the positive count of 693, and the
-  "Skips are not random" limitation can cite a measurement rather than a
-  worry.
+- `data.md` — the composition section takes 693 as the hand-drawn positive label
+  count; the positive *field* count stays unmeasured, since promotion transforms
+  one into the other. The "Skips are not random" limitation can cite a
+  measurement rather than a worry.
 - `Q-05` — the case for an inter-rater round strengthens. The question asked
   whether the resulting number would change anything; there is now a specific
   quantity it would inform.
