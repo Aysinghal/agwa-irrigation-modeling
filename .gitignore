@@ -26,3 +26,6 @@ Thumbs.db
 data/raw/cdl_fields_md_2022*
 data/raw/cdl_fields_positive_md_2022*
 data/raw/cdl_fields_excluded_md_2022*
+
+# Script 9 output — regenerate with scripts/build_label_table.py
+data/labels.geojson
