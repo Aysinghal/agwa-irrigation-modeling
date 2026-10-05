@@ -101,9 +101,10 @@ Built by `scripts/build_label_table.py` from the exports in `data/raw/`.
 | Prevalence over all CDL fields | 2.35% |
 | Median field area, positive / negative | 23.7 / 3.7 ha |
 
-The 881 positives come from 635 distinct hand-drawn labels, since one label can
+The 881 positives come from 574 distinct hand-drawn labels, since one label can
 promote several fields. That grouping is what the split requirement in
-`evaluation.md` acts on. 868 trace to the legacy seed and 13 to the negative
+`evaluation.md` acts on; across the positives and the excluded band together it
+spans 635 labels. 868 trace to the legacy seed and 13 to the negative
 pass. By promotion condition: 246 label share only, 215 field coverage only,
 407 both.
 
