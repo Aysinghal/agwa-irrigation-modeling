@@ -58,14 +58,10 @@ no way to correct after the fact.
 **How we would find out:** a small overlap round, where several labelers relabel
 the same sample, yields an inter-rater agreement figure. This can be done now —
 the labeling interface still works.
-**Circumstantial evidence against, from two entries:** skip rate on randomly
-dealt queues ranges from 2.0% to 22.5% per labeler
-(`2026-09-15-labeler-skip-rate-heterogeneity`), and truss detection during the
-negative pass ranges from 5.0 to 0.0 per 100 fields reviewed
-(`2026-09-17-negative-pass-rejections`). People who diverge this far on adjacent
-judgments are unlikely to agree closely on the label itself. The status stays
-`untested` regardless: no field was ever labeled twice, so there is no agreement
-to measure and nothing here is a substitute for the round. See `Q-05`.
+**Circumstantial evidence against:** labelers diverge sharply on both adjacent
+judgments, skip rate and truss detection (`A-04`, `data.md`). Status stays
+`untested`: no field was labeled twice, so there is no agreement to measure and
+none of this substitutes for the round in `Q-05`.
 
 ### A-04 — Skips were not driven by difficulty
 
@@ -78,14 +74,10 @@ a field — rather than for hard calls.
 every metric is optimistic relative to production.
 **How we would find out:** skip reasons were required free text and are stored
 with the progress assets. Read them.
-**What we found:** the reasons pass and the rates do not. Skip notes describe
-the scene rather than the labeler's difficulty, as assumed. But skip rate ranges
-from 2.0% to 22.5% across labelers on queues dealt at random from one shuffled
-pool, so every queue carries the same difficulty distribution by construction.
-An eleven-fold spread can only come from where each person set their threshold,
-which makes the skip decision a judgment about how visible a truss is. The
-consequence under **If wrong** therefore holds, by a mechanism the stated test
-was not built to detect.
+**What we found:** the reasons pass and the rates do not. Notes describe the
+scene, as assumed, but skip rate ranges 2.0% to 22.5% on randomly dealt queues,
+so the decision turns on where each labeler set their threshold. The **If
+wrong** consequence holds, by a mechanism the stated test could not detect.
 
 ## Field geometry
 
@@ -102,13 +94,11 @@ claim. Downstream aggregation inherits the error.
 **How we would find out:** the overlap-ratio distribution between hand-drawn
 labels and CDL fields already measures this, and is currently used only to set a
 threshold. How tight the upper cluster is constitutes the evidence.
-**What we found:** a more direct measurement arrived first. Of 1001 CDL polygons
-drawn at random for negative labeling, 34 were rejected as not agricultural land
-at all — houses, woods, roads, a solar farm, a sports pitch. That is 3.4%, and a
-lower bound, since rejection was at each labeler's discretion. The rate applies
-to the full inference population, not only to labeling candidates. The
-overlap-ratio test named above remains unrun and would measure a different
-failure: how well CDL boundaries match fields that are genuinely fields.
+**What we found:** 34 of 1001 randomly drawn CDL polygons are not agricultural
+land at all — 3.4%, a lower bound since rejection was discretionary, and it
+applies to the whole inference population. The overlap-ratio test named above is
+still unrun and measures a different failure: how well boundaries match fields
+that are genuinely fields.
 
 ### A-06 — The 1-hectare floor does not exclude a meaningful share of irrigated fields
 
@@ -177,12 +167,8 @@ anyone measured how large it is.
 **If wrong:** a meaningful share of the fields we score in production fall in a
 region where model behaviour is undefined and unvalidated.
 **How we would find out:** count them. One query.
-**What we found:** 730 fields under the original rule, against 714 positives —
-more fields undefined than labeled. `D-02` reduced it to 582 by promoting the
-genuine partial-coverage cases the old measure had misclassified, which is a
-third of the way down but not to "few enough". The band is still comparable in
-size to two thirds of the positive set, and every one of those fields is scored
-at inference. `Q-03` still has to decide what happens to them.
+**What we found:** 582 fields, against 881 positives. Not few enough, and
+every one is scored at inference. `Q-03` has to decide what happens to them.
 
 ## Detectability
 
@@ -238,7 +224,7 @@ are retired rather than refuted if the framing changes.
 **Status:** untested
 **We assume:** a backbone pretrained on some other imagery produces features
 useful for finding trusses in sub-metre aerial imagery.
-**Why:** training from scratch on 1,814 fields is not viable, so transfer
+**Why:** training from scratch on a dataset this size is not viable, so transfer
 is what makes a dataset this size workable at all. But neither candidate family
 (`Q-07`) matches our data cleanly. Geospatial foundation models are pretrained
 on Earth observation imagery, largely at 10–30 m, where a truss is not
@@ -270,7 +256,7 @@ supports it; a long flat distribution refutes it.
 ### A-16 — Field-level supervision is sufficient at this dataset size
 
 **Status:** untested
-**We assume:** 1,814 field-level labels are enough to train tile-level
+**We assume:** the field-level labels in `data.md` are enough to train tile-level
 discrimination through aggregation.
 **Why:** no tile-level labels exist, and producing them would mean relabeling at
 far finer granularity than the effort already spent.

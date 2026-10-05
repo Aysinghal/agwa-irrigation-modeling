@@ -109,7 +109,12 @@ Every file opens with a single `#` title and goes straight into prose.
 
 ### Spec files
 
-- **Present tense.** Describe what is true now, not how it came to be true.
+- **Say it once, in as few words as it takes.** Every sentence a reader does
+  not need is a sentence that can go stale. A number and a link beats a
+  paragraph explaining the number.
+- **Present tense.** Describe what is true now, not how it came to be true. No
+  narrating how a value changed: "881 positives", never "714 before, 881 now".
+  The log holds the change; the spec holds the state.
 - **One fact, one home.** Each fact lives in exactly one file; everywhere else
   links to it. The moment a threshold is stated in two files, they will disagree
   within a month.

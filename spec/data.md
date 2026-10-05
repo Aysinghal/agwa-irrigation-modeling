@@ -22,12 +22,9 @@ purposes: deriving field boundaries, and recording the crop class of each field.
 **Legacy truss map** — A pre-existing manual inventory of center-pivot
 irrigation systems covering the Mid-Atlantic, including the Eastern Maryland
 shore. Used to seed positive labeling assignments, and again at the end as a
-backstop against mislabeled negatives. **It is incomplete**: 19 truss-bearing
-fields surfaced in the negative queue, which is drawn only from fields no
-hand-drawn label touches, so a truss reaching it is one the legacy map never
-recorded (`2026-09-17-negative-pass-rejections`). This bounds both roles — it
-cannot seed the positives it does not contain, and it cannot backstop against
-them either.
+backstop against mislabeled negatives. **It is incomplete**
+(`2026-09-17-negative-pass-rejections`), which bounds both roles: it cannot seed
+positives it does not contain, nor backstop against them.
 
 **TIGER** — US Census state boundaries; the Maryland outline used to clip every
 step of the pipeline.
@@ -68,9 +65,8 @@ that rule is `D-02`: a field becomes a **positive field**, class 1, if at least
 0.15 of the label falls inside it, or at least 0.65 of it lies under the label.
 A field satisfying neither is a sliver and enters the excluded band (`Q-03`).
 
-Two measures rather than one because the labels are inconsistent about what
-they trace — see the limitation below — so either measure used alone discards a
-different group of genuinely irrigated fields.
+Two measures because labels are inconsistent about what they trace (below);
+either alone discards a different group of irrigated fields.
 
 ## How negative labels were made
 
@@ -93,61 +89,40 @@ examples lost.
 
 ## Composition
 
-Measured. `scripts/build_label_table.py` rebuilds the table from the exports
-and reports these; `2026-10-05-promotion-overlap-measure` records the run.
+Built by `scripts/build_label_table.py` from the exports in `data/raw/`.
 
 | | count |
 |---|---|
 | CDL fields in Maryland | 37,523 |
-| **Positive fields** | **881** |
-| — from the legacy seed | 868 |
-| — recovered from negative-pass rejections | 13 |
-| **Negative fields** | **933** |
+| Positive fields | 881 |
+| Negative fields | 933 |
 | Excluded band | 582 |
 | Class ratio | 1 : 1.06 |
-| Prevalence if applied to all CDL fields | 2.35% |
+| Prevalence over all CDL fields | 2.35% |
+| Median field area, positive / negative | 23.7 / 3.7 ha |
 
-Positives divide by which promotion condition fired: 246 on label share alone,
-215 on field coverage alone, 407 on both. The two groups caught by one
-condition only are the large and the small fields respectively, and a single
-measure would have dropped one or the other.
+The 881 positives come from 635 distinct hand-drawn labels, since one label can
+promote several fields. That grouping is what the split requirement in
+`evaluation.md` acts on. 868 trace to the legacy seed and 13 to the negative
+pass. By promotion condition: 246 label share only, 215 field coverage only,
+407 both.
 
-Underlying human decisions: 693 hand-drawn positive polygons from 780 points
-viewed, so 87 skips; 947 confirmed negatives and 53 rejections from 1000
-candidates, with 14 of the confirmed negatives then dropped by the legacy-map
-backstop. The positive target was 700, and one labeler exhausted a full
-120-point queue at a 22.5% skip rate without reaching 100.
+Underlying human decisions: 693 hand-drawn positive polygons and 87 skips from
+780 points viewed; 947 confirmed negatives and 53 rejections from 1000
+candidates, less 14 dropped by the legacy backstop and one unrecoverable
+(`2026-09-15-labeler-skip-rate-heterogeneity`,
+`2026-10-05-promotion-overlap-measure`).
 
-The 881 positives trace to 635 distinct hand-drawn labels, since CDL fragments
-some fields and one label can promote several. That grouping is what the split
-requirement in `evaluation.md` acts on.
-
-Two repairs are applied: `field_343` is dropped, having been rejected and then
-confirmed eight minutes later with a note reading "not a land", and `field_450`
-is restored from its progress marker after a partially failed batch export lost
-its label asset.
-
-Field areas differ sharply by class. The median CDL field is 4.0 ha; the median
-positive is substantially larger, which is a confound in its own right and is
-recorded below.
-
-What still needs measuring:
-
-- Geographic distribution of each class, by county and by physiographic region
-- Crop class composition, per class
+Geographic distribution by county and physiographic region, and crop class
+composition per class, are not yet measured.
 
 ## Known biases and limitations
 
 **Positives are Eastern Shore; negatives are statewide.** The legacy truss map
-covers the Mid-Atlantic — effectively the Eastern Shore in Maryland — so every
-positive comes from there. The one exception proves the constraint is the
-sampling frame rather than the geography: 19 truss-bearing fields were found
-during the negative pass, which drew uniformly from statewide CDL fields, and
-those are the only positives the project has collected by a process that does
-not inherit the legacy map's footprint. Thirteen are now promoted and tagged
-`negative_pass` so they stay distinguishable; the remaining six describe a truss
-at the boundary and sit with `Q-03`
-(`2026-09-17-negative-pass-rejections`). Negatives were drawn from CDL fields across the whole
+covers only the Mid-Atlantic, so 868 of 881 positives come from the Eastern
+Shore. The exception is the 13 tagged `negative_pass`, drawn uniformly from
+statewide CDL fields — the only positives whose sampling frame is not the legacy
+map (`2026-09-17-negative-pass-rejections`). Negatives were drawn from CDL fields across the whole
 state, including the predominantly rainfed west. Class therefore correlates with
 region, and a model can score well by learning soil color, field geometry, tree
 lines, or imagery flight date instead of learning what a truss looks like. This
@@ -176,44 +151,33 @@ labelers disagree. Labeling load was also uneven by design, so three labelers
 account for the majority of negatives and their individual tendencies are
 weighted accordingly.
 
-**Positives are far larger than negatives.** Median positive field 23.7 ha
-against 3.7 ha for negatives, a factor of 6.4, where the CDL population median
-is 4.0 ha — so the negatives carry the population's size distribution and the
-positives do not. Area alone reaches ROC-AUC 0.763 on the labeled set
-(`2026-10-05-field-area-baseline`). The separation is real, since a center pivot
-needs a large field, but it means a model can learn size instead of structure,
-and `evaluation.md` carries area as a baseline accordingly. `D-02` widened the
-gap by recovering large fields the superseded rule discarded.
+**Positives are far larger than negatives.** Negatives carry the CDL
+population's size distribution and positives do not (see Composition). Area
+alone reaches ROC-AUC 0.763 on the labeled set, so a model can score well by
+learning size rather than structure; `evaluation.md` carries area as a baseline
+accordingly (`2026-10-05-field-area-baseline`).
 
-**The labeling protocol was ambiguous and labelers diverged.** The instruction
-above asks for a polygon around the whole field. Median hand-drawn area over
-field area runs from 0.60 to 0.97 by labeler, overall median 0.78, which is
-what a circle inscribed in a square covers: most people traced the pivot rather
-than the field. `D-02` tolerates either, but the labels do not record which was
-intended in any given case, so no measure derived from label shape alone can be
-trusted. Any further labeling round should state which to draw
-(`2026-10-05-promotion-overlap-measure`).
+**Labels are inconsistent about what they trace.** The protocol asks for the
+field outline; most labelers drew the pivot circle, and median label area over
+field area ranges 0.60 to 0.97 across the seven
+(`2026-10-05-promotion-overlap-measure`). Nothing records which was intended per
+label, so no measure derived from label shape alone is trustworthy. `D-02` is
+built around this. Any further round should state which to draw.
 
-**Promotion can still lose fields CDL fragments.** A label is promoted onto
-whatever CDL fields satisfy either condition in `D-02`. Where CDL merges a real
-field with a neighbour, the merged polygon may satisfy neither, and the field is
-lost. This is narrower than the failure the single-threshold rule had, but it is
-not eliminated.
+**Promotion can still lose fields CDL merges.** Where CDL merges a real field
+with a neighbour, the merged polygon may satisfy neither `D-02` condition and
+the field is lost.
 
-**Skips are not random.** Labelers skipped points they found unusable, and skip
-rate ranges from 2.0% to 22.5% across the seven of them on queues dealt at
-random from one shuffled pool (`2026-09-15-labeler-skip-rate-heterogeneity`).
-Difficulty did drive those decisions, so the surviving positives are
-systematically the easier cases and measured performance is optimistic relative
-to production by an amount not yet quantified. `A-04` is refuted.
+**Skips are not random.** Skip rate ranges 2.0% to 22.5% across labelers on
+randomly dealt queues (`A-04`, refuted). The surviving positives are therefore
+the easier cases, and measured performance is optimistic by an unquantified
+amount.
 
-**Negatives may contain trusses.** Labelers caught 19 truss-bearing fields in
-the negative queue, at rates from 5.0 to 0.0 per 100 reviewed. The spread implies
-some were missed — on the order of 1-3% of the 933 negatives retained, though
-the estimate is underpowered. The automated backstop cannot correct this: it
-drops negatives overlapping the legacy truss map, and these are by construction
-fields the legacy map does not contain
-(`2026-09-17-negative-pass-rejections`).
+**Negatives may contain trusses.** Truss detection during the negative pass
+ranged 5.0 to 0.0 per 100 fields reviewed, implying 1-3% of the 933 negatives
+carry one undetected (`2026-09-17-negative-pass-rejections`). The legacy-map
+backstop cannot catch them: by construction these are fields the legacy map
+omits.
 
 **Temporal ambiguity.** The NAIP mosaic spans 2021–2023 and different fields are
 observed in different years; mosaic composition across that window was not

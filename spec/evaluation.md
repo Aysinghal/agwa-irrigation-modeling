@@ -28,24 +28,15 @@ assumes.
 
 ### Label defects bound every number reported here
 
-Two measured defects in the labels sit underneath every metric below, and
-neither is correctable by anything in this file.
+Two defects recorded in `data.md` sit underneath every metric below and are not
+correctable here: positives are systematically easier than the population
+(`A-04`, refuted), and an estimated 1-3% of negatives carry an undetected truss.
 
-Positives are easier than the population. Skip rate varied elevenfold across
-labelers on randomly dealt queues, so the marginal pivots that one labeler kept
-and another discarded are absent in a quantity nobody has measured
-(`A-04`, refuted).
-
-Negatives contain an unknown number of positives. Trusses were found in the
-negative queue at rates differing from 5.0 to 0.0 per 100 reviewed, implying
-missed cases on the order of 1-3% (`data.md`). The legacy-map backstop drops 14
-of them, but by construction cannot catch those the legacy map omits.
-
-The two push measured scores in the same direction. Easier positives inflate
-recall; trusses hiding in the negative set turn correct detections into apparent
-false positives and deflate precision. Neither shifts with the choice of metric,
-split, or threshold, so both are stated alongside results rather than corrected
-for. Sizing them is what `Q-05` would buy.
+They push scores in opposite directions. Easier positives inflate recall; hidden
+trusses turn correct detections into apparent false positives and deflate
+precision. Neither shifts with the choice of metric, split, or threshold, so
+both are stated alongside results rather than corrected for. `Q-05` would size
+them.
 
 ## Splits
 
@@ -93,8 +84,8 @@ anywhere in the final number.
 
 ### Report spread, not a point
 
-With 1,814 fields, any single test partition is small enough that one
-number is dominated by which fields happened to land in it. Results are reported
+At this dataset size (`data.md`) any single test partition is small enough
+that one number is dominated by which fields happened to land in it. Results are reported
 as a mean and a spread across spatial cross-validation folds.
 
 ## Metrics
@@ -171,14 +162,11 @@ research proposal notes that vegetation indices alone overestimate irrigation,
 so this is expected to have high recall and poor precision — which is itself a
 useful reference point.
 
-**Field area.** Area alone, with no imagery, reaches ROC-AUC 0.763 and PR-AUC
-0.781 on the labeled set against a floor of 0.486
-(`2026-10-05-field-area-baseline`). Center pivots need large fields, so this is
-real signal rather than leakage, and it is the demanding floor: a model can
-measure field size from a cropped chip without resolving any structure, so one
-scoring near these figures has not shown it can see a truss. Added to this list
-after the measurement, which is the kind of revision the preregistration note
-above requires be recorded rather than made silently.
+**Field area.** Area alone reaches ROC-AUC 0.763 and PR-AUC 0.781 on the
+labeled set, floor 0.486 (`2026-10-05-field-area-baseline`). The demanding
+floor: field size is measurable from a cropped chip without resolving any
+structure, so a model scoring near it has not shown it can see a truss. Added
+after the measurement rather than before, per Preregistration.
 
 **Whole-field classifier.** The alternative framing in `Q-06`. It doubles as
 both a candidate approach and a baseline: if the MIL model cannot beat a resized

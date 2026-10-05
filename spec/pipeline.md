@@ -96,9 +96,8 @@ their header comments; the filenames are not ordered, so the mapping is:
 `view_assignments.js` is an unnumbered utility for viewing assignments on a map.
 
 **Scripts 5 and 8 no longer produce the labeled set.** Promotion and assembly
-happen locally, in `scripts/build_label_table.py`, under the rule in `D-02`.
-The two scripts stay as the record of how the dataset was originally made and
-are not rerun. `gee/export/` holds the scripts that move the inputs out.
+happen in `scripts/build_label_table.py` under `D-02`. Both stay as a record
+and are not rerun. `gee/export/` moves the inputs out.
 
 Scripts 2 and 7 are per-labeler: each person set `USER` at the top and ran their
 own queue. Both batch up to ten decisions before requiring the Earth Engine
@@ -116,23 +115,17 @@ decisions made by seven people. Nothing regenerates them.
 > **The hand-drawn labels are irreplaceable.** Every other asset can be rebuilt
 > from published data and the vendored scripts. The labels cannot.
 
-They are now committed to this repository under `data/raw/`, so a copy exists
-wherever the repository is cloned. That was the first thing done with them
-(`2026-09-15-labeler-skip-rate-heterogeneity`), before any decision about
-training formats. Earth Engine is no longer the only place they exist.
+They are committed under `data/raw/`, so a copy exists wherever the repository
+is cloned (`2026-09-15-labeler-skip-rate-heterogeneity`).
 
 ## Getting data out of Earth Engine
 
 **Labels: done, via Drive.** `gee/export/backup_all_labels.js` merges each
-per-labeler folder tree into one collection and exports it, so the whole label
-set comes out in ten files rather than fifteen hundred.
-`gee/export/export_cdl_fields.js` exports the CDL field set and the promotion
-outputs. Both write GeoJSON to Drive, which is a staging area only — the
-committed copy in this repository is the backup, since Drive belongs to one
-person's account.
-
-`center_pivot_irrigation_trusses` is exported too, which is what lets the
-legacy backstop run locally.
+per-labeler folder tree into one collection, so the label set comes out in ten
+files rather than fifteen hundred. `gee/export/export_cdl_fields.js` exports the
+CDL field set, the promotion outputs, and the legacy truss map. Both write
+GeoJSON to Drive, which is staging only — Drive belongs to one person's account,
+so the committed copy here is the backup.
 
 **Imagery: not yet decided.** The route and format for per-field chips are
 open. Sizing: at NAIP resolution the labeled set is on the order of a few GB,
@@ -145,9 +138,9 @@ different pipelines with different storage footprints and iteration speeds. The
 fork is described in `model.md` and is settled by whichever export path is
 chosen.
 
-Chip volume is now sizeable: 1,814 labeled fields at NAIP resolution is on the
-order of a few GB, and 37,523 statewide fields on the order of 100 GB. The
-latter is not stored — fields are scored and the pixels discarded.
+Chip volume at NAIP resolution is a few GB for the labeled set and on the
+order of 100 GB statewide. The latter is not stored — fields are scored and the
+pixels discarded.
 
 ## Training environment
 
