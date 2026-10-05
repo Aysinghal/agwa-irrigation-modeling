@@ -61,7 +61,7 @@ the labeling interface still works.
 **Circumstantial evidence against:** labelers diverge sharply on both adjacent
 judgments, skip rate and truss detection (`A-04`, `data.md`). Status stays
 `untested`: no field was labeled twice, so there is no agreement to measure and
-none of this substitutes for the round in `Q-05`.
+none of this substitutes for the round in `D-03`.
 
 ### A-04 — Skips were not driven by difficulty
 
@@ -170,7 +170,7 @@ region where model behaviour is undefined and unvalidated.
 **How we would find out:** count them. One query.
 **What we found:** the band is comparable in size to the positive set
 (`data.md`). Not few enough, and every one of those fields is scored at
-inference. `Q-03` has to decide what happens to them.
+inference. `D-03` relabels them by hand.
 
 ## Detectability
 

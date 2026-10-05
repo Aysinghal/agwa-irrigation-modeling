@@ -35,8 +35,8 @@ correctable here: positives are systematically easier than the population
 They push scores in opposite directions. Easier positives inflate recall; hidden
 trusses turn correct detections into apparent false positives and deflate
 precision. Neither shifts with the choice of metric, split, or threshold, so
-both are stated alongside results rather than corrected for. `Q-05` would size
-them.
+both are stated alongside results rather than corrected for. The round in
+`D-03` sizes them.
 
 ## Splits
 
