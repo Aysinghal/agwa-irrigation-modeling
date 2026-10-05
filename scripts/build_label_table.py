@@ -22,18 +22,41 @@ Four jobs
    positives (2026-09-17-negative-pass-rejections).
 4. Repair the two damaged records: drop field_343, restore field_450.
 
-Method note
------------
-Overlap is computed by exact polygon intersection, where Earth Engine used a
-10 m raster. Exact intersection is more accurate, but a field sitting near the
-0.65 promotion threshold can land on the other side of it. The script therefore
-compares its own positive set against the Earth Engine one and reports the
-difference rather than hiding it.
+Promotion rule
+--------------
+A field is promoted when a large share of the hand-drawn blob falls inside it,
+not when the blob covers a large share of the field.
 
-Ratios are computed in planar degrees. A ratio is intersection area over field
-area, both measured over the same small polygon, so the projection's scale
-distortion cancels. Reported areas come from the geodesic area_m2 that Earth
-Engine already computed.
+promote_positives.js used the second measure: intersection divided by FIELD
+area. That measure depends on the shape of both polygons, and the labelers did
+not draw the same thing as each other — median blob area over field area runs
+from 0.60 for one labeler to 0.97 for another, with an overall median of 0.78,
+which is what a circle inscribed in a square covers. Most people drew the pivot
+circle rather than the field outline, though the protocol in spec/data.md asked
+for the field. Dividing by field area therefore measures how round the field is:
+a circle fills 79% of a square and 39% of a 2:1 rectangle, so elongated fields
+failed the threshold whether or not they carried a pivot. That is why the
+borderline fields were three times the median size.
+
+Dividing by BLOB area asks instead "which field is this pivot on", which is the
+question the human actually answered. It is shape-independent, and it allows one
+blob to promote several fields where CDL fragments the field beneath it.
+
+The distribution supports it. Blob share has three modes: a spill cluster below
+0.05 where a blob clips a neighbour (1005 of 1976 label-field pairs), a cluster
+near 0.5 where CDL splits a field in two, and a cluster near 1.0 where the blob
+sits inside one field. The spill cluster is roughly forty times the trough that
+follows it, against the 1.2x "valley" the field-area measure produced.
+
+Field coverage is still computed and written out as field_coverage, since Q-03
+is about partial coverage and the number is wanted there.
+
+Both measures use exact polygon intersection rather than Earth Engine's 10 m
+raster. That raster converted pixels to area as pixels * 100 m2, which is wrong
+at this latitude; 568 of 1444 fields carried a ratio above 1.0, which cannot
+happen geometrically. Ratios here are computed in planar degrees, where the
+projection's scale distortion cancels between numerator and denominator.
+Reported areas come from the geodesic area_m2 Earth Engine already computed.
 
 Usage
 -----
@@ -58,7 +81,17 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data"
 
-PROMOTION_THRESHOLD = 0.65  # gee/labeling/promote_positives.js
+# Minimum share of a hand-drawn blob that must fall inside a field for that
+# field to be promoted. Set just past the spill cluster, which ends between
+# 0.10 and 0.15 (1005 pairs below 0.05, 110 in 0.05-0.10, 45 in 0.10-0.15).
+BLOB_SHARE_THRESHOLD = 0.15
+
+# Minimum share of a FIELD that must sit under the blob for that field to be
+# promoted on coverage alone. Catches small fields lying entirely beneath a
+# pivot, which score near zero on blob share because they are a tiny part of a
+# large blob. Kept at the 0.65 the project already used.
+FIELD_COVERAGE_THRESHOLD = 0.65  # gee/labeling/promote_positives.js
+
 KEY_PRECISION = 1_000_000  # D-01: degrees x 1e6, rounded
 
 # Damaged records, from the export verification in commit 3c91253.
@@ -157,24 +190,24 @@ tree = STRtree(cdl_geoms)
 
 log("\nPromoting hand-drawn labels onto CDL fields, one label at a time...")
 
-# A field can be covered by parts of several hand-drawn labels where pivots sit
-# close together. Two different quantities follow, and conflating them is what
-# makes a reimplementation disagree with Earth Engine:
+# Two quantities per (label, field) pair, and keeping them separate is the point:
 #
-#   promotion  asks how much of the field is covered by labeled truss area at
-#              all, which is the UNION over every label touching it. This is
-#              what promote_positives.js measures, because it burns all labels
-#              into one mask before counting.
+#   blob_share      intersection / BLOB area. "How much of this pivot sits on
+#                   this field." Shape-independent, and what promotion uses.
 #
-#   provenance asks which single label owns the field for grouping, which is the
-#              label contributing the largest individual share. Earth Engine
-#              cannot answer this at all, and it is the reason for this script.
+#   field_coverage  intersection / FIELD area. "How much of this field is under
+#                   labeled truss." What promote_positives.js thresholded, and
+#                   what Q-03 is about. Computed and written, never promoted on.
 #
-# Both are computed and both are written out.
+# field_coverage takes the UNION across every label touching the field, because
+# that is what a single merged mask measures and what the legacy comparison
+# needs. blob_share is per label by construction — it is one blob's share.
 
-# field index -> list of (individual_ratio, point_id, labeler, intersection geom)
+# field index -> list of (blob_share, point_id, labeler, intersection geom)
 touches: dict[int, list[tuple[float, int, str, object]]] = defaultdict(list)
 labels_with_no_field = []
+blob_share_pairs: list[float] = []
+label_promotes = Counter()
 
 for f in labels_raw:
     props = f["properties"]
@@ -183,54 +216,89 @@ for f in labels_raw:
     geom = shape(f["geometry"])
     if not geom.is_valid:
         geom = geom.buffer(0)
+    if geom.area <= 0:
+        labels_with_no_field.append(point_id)
+        continue
 
-    hit_any = False
+    n_promoted_here = 0
     for idx in tree.query(geom):
         idx = int(idx)
-        field_geom = cdl_geoms[idx]
         try:
-            inter = geom.intersection(field_geom)
+            inter = geom.intersection(cdl_geoms[idx])
         except Exception:
-            inter = geom.buffer(0).intersection(field_geom.buffer(0))
+            inter = geom.buffer(0).intersection(cdl_geoms[idx].buffer(0))
         if inter.is_empty or inter.area <= 0:
             continue
-        touches[idx].append((inter.area / field_geom.area, point_id, labeler, inter))
-        hit_any = True
+        blob_share = min(inter.area / geom.area, 1.0)
+        blob_share_pairs.append(blob_share)
+        touches[idx].append((blob_share, point_id, labeler, inter))
+        if blob_share >= BLOB_SHARE_THRESHOLD:
+            n_promoted_here += 1
 
-    if not hit_any:
+    if n_promoted_here == 0 and not any(
+            t[1] == point_id for lst in touches.values() for t in lst):
         labels_with_no_field.append(point_id)
+    label_promotes[n_promoted_here] += 1
 
-log(f"  labels processed          {len(labels_raw):>6,}")
-log(f"  labels matching no field  {len(labels_with_no_field):>6,}")
-log(f"  CDL fields touched        {len(touches):>6,}")
+log(f"  labels processed            {len(labels_raw):>6,}")
+log(f"  label-field pairs touching  {len(blob_share_pairs):>6,}")
+log(f"  labels promoting no field   {label_promotes[0]:>6,}")
+log(f"  CDL fields touched          {len(touches):>6,}")
+
+log()
+log("fields promoted per label:")
+for n in sorted(label_promotes):
+    log(f"    {n} field(s): {label_promotes[n]:>4,} labels")
 
 promoted: dict[int, dict] = {}
 multi_label = 0
 for idx, hits in touches.items():
     hits.sort(key=lambda h: h[0], reverse=True)
-    own_ratio, point_id, labeler, _ = hits[0]
+    own_share, point_id, labeler, _ = hits[0]
     if len(hits) > 1:
         multi_label += 1
         union_area = unary_union([h[3] for h in hits]).area
     else:
         union_area = hits[0][3].area
-    # Capped just under 1 for the same reason promote_positives.js caps: a ratio
-    # can round fractionally past 100% on a field the label fully covers.
-    union_ratio = min(union_area / cdl_geoms[idx].area, 0.9999)
     promoted[idx] = {
-        "overlap_ratio": union_ratio,
-        "primary_label_ratio": min(own_ratio, 0.9999),
+        "blob_share": own_share,
+        "field_coverage": min(union_area / cdl_geoms[idx].area, 0.9999),
         "source_point_id": point_id,
         "source_labeler": labeler,
         "n_labels_touching": len(hits),
     }
 
-positive_idx = {i for i, v in promoted.items() if v["overlap_ratio"] >= PROMOTION_THRESHOLD}
-band_idx = {i for i, v in promoted.items() if v["overlap_ratio"] < PROMOTION_THRESHOLD}
+# Either measure is sufficient, and neither is necessary. Physical overlap is
+# real if a meaningful share of the pivot sits on the field OR a meaningful
+# share of the field sits under the pivot. Requiring both privileges one shape
+# over another, which is the error in the original rule: field coverage alone
+# dropped 174 large fields carrying a pivot (median 70 ha, 94% of the blob on
+# them), and blob share alone drops 235 small fields lying wholly beneath one
+# (median 2 ha, 97% covered). Only a field failing both is a genuine sliver.
+for v in promoted.values():
+    by_blob = v["blob_share"] >= BLOB_SHARE_THRESHOLD
+    by_cover = v["field_coverage"] >= FIELD_COVERAGE_THRESHOLD
+    v["promoted_by"] = ("both" if by_blob and by_cover
+                        else "blob_share" if by_blob
+                        else "field_coverage" if by_cover
+                        else "")
 
-log(f"  fields touched by >1 label {multi_label:>5,}")
-log(f"  promoted to positive       {len(positive_idx):>5,}  (ratio >= {PROMOTION_THRESHOLD})")
-log(f"  sub-threshold band         {len(band_idx):>5,}  (0 < ratio < {PROMOTION_THRESHOLD})")
+positive_idx = {i for i, v in promoted.items() if v["promoted_by"]}
+band_idx = set(promoted) - positive_idx
+
+log()
+log(f"fields touched by >1 label  {multi_label:>6,}")
+log(f"  PROMOTED                    {len(positive_idx):>6,}")
+why = Counter(v["promoted_by"] for v in promoted.values() if v["promoted_by"])
+for crit, n in sorted(why.items()):
+    log(f"    by {crit:<16s}      {n:>6,}")
+log(f"  touched but not promoted    {len(band_idx):>6,}")
+
+legacy_n = sum(1 for v in promoted.values()
+               if v["field_coverage"] >= FIELD_COVERAGE_THRESHOLD)
+blob_n = sum(1 for v in promoted.values()
+             if v["blob_share"] >= BLOB_SHARE_THRESHOLD)
+log(f"  field_coverage alone would give {legacy_n:,}; blob_share alone {blob_n:,}")
 
 # ---------------------------------------------------------------- check vs EE
 
@@ -367,8 +435,9 @@ def put(idx: int, **kw) -> None:
         "source_point_id": "",
         "source_queue_id": "",
         "source_labeler": "",
-        "overlap_ratio": "",
-        "primary_label_ratio": "",
+        "blob_share": "",
+        "field_coverage": "",
+        "promoted_by": "",
         "n_labels_touching": "",
         "area_m2": round(props.get("area_m2", 0.0), 2),
         "crop_class": props.get("crop_class", ""),
@@ -382,18 +451,19 @@ for idx in sorted(positive_idx):
     p = promoted[idx]
     put(idx, label_class=1, sample_type="positive", source="legacy_seed",
         source_point_id=p["source_point_id"], source_labeler=p["source_labeler"],
-        overlap_ratio=round(p["overlap_ratio"], 4),
-        primary_label_ratio=round(p["primary_label_ratio"], 4),
+        blob_share=round(p["blob_share"], 4),
+        field_coverage=round(p["field_coverage"], 4),
+        promoted_by=p["promoted_by"],
         n_labels_touching=p["n_labels_touching"])
 
 for idx in sorted(band_idx):
     p = promoted[idx]
     put(idx, label_class="", sample_type="excluded_band", source="legacy_seed",
         source_point_id=p["source_point_id"], source_labeler=p["source_labeler"],
-        overlap_ratio=round(p["overlap_ratio"], 4),
-        primary_label_ratio=round(p["primary_label_ratio"], 4),
+        blob_share=round(p["blob_share"], 4),
+        field_coverage=round(p["field_coverage"], 4),
         n_labels_touching=p["n_labels_touching"],
-        note="sub-threshold overlap; see Q-03")
+        note="blob only clips this field; see Q-03")
 
 for idx, qid, labeler in neg_records:
     if idx in rows:  # a promoted field cannot also be a negative
