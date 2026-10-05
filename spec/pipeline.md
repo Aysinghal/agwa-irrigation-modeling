@@ -48,9 +48,9 @@ below are relative to that prefix.
 | `assignments/truss_point_assignments_md_v1` | Positive labeling assignments — points, labeler, queue position |
 | `assignments/negative_field_assignments_md_v1` | Negative candidate assignments — fields, labeler, queue position |
 | `cdl_fields_md_2022` | All CDL-derived field polygons for Maryland |
-| `cdl_fields_positive_md_2022` | Fields promoted to positive at the overlap threshold |
+| `cdl_fields_positive_md_2022` | Fields promoted under the superseded rule. Retained as the comparison `D-02` was validated against. |
 | `cdl_fields_excluded_md_2022` | Every field touching a hand-drawn label; the negative no-sample zone |
-| `training_fields_md_2022` | The merged labeled training set. The pipeline's output. |
+| `training_fields_md_2022` | The labeled set as Earth Engine built it. Superseded by `data/labels.csv`; see below. |
 
 ### Per-labeler folders
 
@@ -95,6 +95,11 @@ their header comments; the filenames are not ordered, so the mapping is:
 
 `view_assignments.js` is an unnumbered utility for viewing assignments on a map.
 
+**Scripts 5 and 8 no longer produce the labeled set.** Promotion and assembly
+happen locally, in `scripts/build_label_table.py`, under the rule in `D-02`.
+The two scripts stay as the record of how the dataset was originally made and
+are not rerun. `gee/export/` holds the scripts that move the inputs out.
+
 Scripts 2 and 7 are per-labeler: each person set `USER` at the top and ran their
 own queue. Both batch up to ten decisions before requiring the Earth Engine
 Tasks tab to be run.
@@ -105,19 +110,16 @@ Scripts 1, 3, 5, 6 and 8 are deterministic. They read published datasets and
 project assets, use a fixed random seed of 42 wherever sampling occurs, and
 re-running them reproduces their outputs exactly.
 
-**Scripts 2 and 7 are not reproducible at all.** They record roughly 1500 human
+**Scripts 2 and 7 are not reproducible at all.** They record 1,781 human
 decisions made by seven people. Nothing regenerates them.
 
-The consequence is the most important operational fact about this project:
+> **The hand-drawn labels are irreplaceable.** Every other asset can be rebuilt
+> from published data and the vendored scripts. The labels cannot.
 
-> **The hand-drawn labels are irreplaceable and currently exist in exactly one
-> place.** Every other asset can be rebuilt from published data and the vendored
-> scripts. The labels cannot. There is no copy outside the Earth Engine project.
-> If access changes, the project is deleted, or an asset is overwritten, that
-> work is gone and can only be recovered by redoing all of it.
-
-Exporting the labels is therefore a backup task before it is anything else, and
-should not wait on decisions about training data formats.
+They are now committed to this repository under `data/raw/`, so a copy exists
+wherever the repository is cloned. That was the first thing done with them
+(`2026-09-15-labeler-skip-rate-heterogeneity`), before any decision about
+training formats. Earth Engine is no longer the only place they exist.
 
 ## Getting data out of Earth Engine
 
@@ -129,8 +131,8 @@ outputs. Both write GeoJSON to Drive, which is a staging area only — the
 committed copy in this repository is the backup, since Drive belongs to one
 person's account.
 
-`center_pivot_irrigation_trusses` is **not yet exported**, which is why the
-rebuild cannot apply the legacy backstop.
+`center_pivot_irrigation_trusses` is exported too, which is what lets the
+legacy backstop run locally.
 
 **Imagery: not yet decided.** The route and format for per-field chips are
 open. Sizing: at NAIP resolution the labeled set is on the order of a few GB,
@@ -143,9 +145,9 @@ different pipelines with different storage footprints and iteration speeds. The
 fork is described in `model.md` and is settled by whichever export path is
 chosen.
 
-Sizing the total chip volume at NAIP resolution for the field count involved is
-the input that decides this, and it is not yet known — the field counts
-themselves are unmeasured (`data.md`).
+Chip volume is now sizeable: 1,814 labeled fields at NAIP resolution is on the
+order of a few GB, and 37,523 statewide fields on the order of 100 GB. The
+latter is not stored — fields are scored and the pixels discarded.
 
 ## Training environment
 

@@ -38,7 +38,8 @@ and another discarded are absent in a quantity nobody has measured
 
 Negatives contain an unknown number of positives. Trusses were found in the
 negative queue at rates differing from 5.0 to 0.0 per 100 reviewed, implying
-missed cases on the order of 1-3% (`data.md`).
+missed cases on the order of 1-3% (`data.md`). The legacy-map backstop drops 14
+of them, but by construction cannot catch those the legacy map omits.
 
 The two push measured scores in the same direction. Easier positives inflate
 recall; trusses hiding in the negative set turn correct detections into apparent
@@ -92,7 +93,7 @@ anywhere in the final number.
 
 ### Report spread, not a point
 
-With roughly 1500 fields, any single test partition is small enough that one
+With 1,814 fields, any single test partition is small enough that one
 number is dominated by which fields happened to land in it. Results are reported
 as a mean and a spread across spatial cross-validation folds.
 
@@ -169,6 +170,15 @@ broken pipeline rather than a hard problem.
 research proposal notes that vegetation indices alone overestimate irrigation,
 so this is expected to have high recall and poor precision — which is itself a
 useful reference point.
+
+**Field area.** Area alone, with no imagery, reaches ROC-AUC 0.763 and PR-AUC
+0.781 on the labeled set against a floor of 0.486
+(`2026-10-05-field-area-baseline`). Center pivots need large fields, so this is
+real signal rather than leakage, and it is the demanding floor: a model can
+measure field size from a cropped chip without resolving any structure, so one
+scoring near these figures has not shown it can see a truss. Added to this list
+after the measurement, which is the kind of revision the preregistration note
+above requires be recorded rather than made silently.
 
 **Whole-field classifier.** The alternative framing in `Q-06`. It doubles as
 both a candidate approach and a baseline: if the MIL model cannot beat a resized

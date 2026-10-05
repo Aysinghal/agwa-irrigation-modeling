@@ -177,14 +177,13 @@ account for the majority of negatives and their individual tendencies are
 weighted accordingly.
 
 **Positives are far larger than negatives.** Median positive field 23.7 ha
-against 3.7 ha for negatives, a factor of 6.4, and 4.0 ha for the CDL
-population as a whole. Center pivots sit on large fields, so this is partly
-real signal rather than an artifact — but it means field area alone separates
-the classes, and a model can learn size instead of structure. Thresholding on
-area is therefore a baseline `evaluation.md` has to beat, and the gap widened
-under `D-02`, which recovered large fields the old shape-dependent rule
-discarded. The per-field and area-weighted metrics in `evaluation.md` will
-diverge accordingly.
+against 3.7 ha for negatives, a factor of 6.4, where the CDL population median
+is 4.0 ha — so the negatives carry the population's size distribution and the
+positives do not. Area alone reaches ROC-AUC 0.763 on the labeled set
+(`2026-10-05-field-area-baseline`). The separation is real, since a center pivot
+needs a large field, but it means a model can learn size instead of structure,
+and `evaluation.md` carries area as a baseline accordingly. `D-02` widened the
+gap by recovering large fields the superseded rule discarded.
 
 **The labeling protocol was ambiguous and labelers diverged.** The instruction
 above asks for a polygon around the whole field. Median hand-drawn area over

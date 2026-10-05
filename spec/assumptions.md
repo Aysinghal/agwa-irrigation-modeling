@@ -238,7 +238,7 @@ are retired rather than refuted if the framing changes.
 **Status:** untested
 **We assume:** a backbone pretrained on some other imagery produces features
 useful for finding trusses in sub-metre aerial imagery.
-**Why:** training from scratch on roughly 1500 fields is not viable, so transfer
+**Why:** training from scratch on 1,814 fields is not viable, so transfer
 is what makes a dataset this size workable at all. But neither candidate family
 (`Q-07`) matches our data cleanly. Geospatial foundation models are pretrained
 on Earth observation imagery, largely at 10–30 m, where a truss is not
@@ -270,7 +270,7 @@ supports it; a long flat distribution refutes it.
 ### A-16 — Field-level supervision is sufficient at this dataset size
 
 **Status:** untested
-**We assume:** roughly 1500 field-level labels are enough to train tile-level
+**We assume:** 1,814 field-level labels are enough to train tile-level
 discrimination through aggregation.
 **Why:** no tile-level labels exist, and producing them would mean relabeling at
 far finer granularity than the effort already spent.
