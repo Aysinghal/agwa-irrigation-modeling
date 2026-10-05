@@ -54,6 +54,9 @@ bin with a standard deviation of 5.8 against Poisson noise of 5.7.
 Blob share does have one. Of 1976 label-field pairs, 1005 fall below 0.05 and
 the count drops to 45 by 0.15.
 
+With the legacy truss map exported, the backstop `merge_training_set.js`
+applies runs locally and drops 14 of the 947 confirmed negatives.
+
 ## Interpretation
 
 Dividing by field area asks what fraction of the field lies under the blob,
@@ -91,8 +94,9 @@ measure applied to them was.
 
 ## Next
 
-Export `center_pivot_irrigation_trusses`. The legacy backstop in
-`merge_training_set.js` cannot run locally without it, so the negative set is
-not yet comparable to `training_fields_md_2022`.
+The 87 skipped positive points, which `A-04` and `Q-05` both point at.
 
-Then the 87 skipped positive points, which `A-04` and `Q-05` both point at.
+The legacy map carries `Confidence`, `County` and `Imagery_In` columns that
+nothing in this project currently reads. Worth a look: a per-pivot confidence
+rating bears on `A-01`, and an imagery date bears on the temporal ambiguity
+`data.md` records.

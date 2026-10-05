@@ -54,7 +54,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75326407_38203012,0,negative,negative_pass,,904,mike,,,,,88142.9,1,
 -75333907_38173430,0,negative,negative_pass,,707,sienna,,,,,49468.29,1,
 -75334411_38372917,1,positive,legacy_seed,107,,mike,0.9592,0.3006,blob_share,1,226644.4,1,
--75335030_38264225,0,negative,negative_pass,,24,maddie,,,,,356164.32,1,
 -75342746_38405012,,excluded_band,legacy_seed,143,,taryn,0.003,0.0677,,1,15289.39,5,blob only clips this field; see Q-03
 -75343809_38412768,,excluded_band,legacy_seed,143,,taryn,0.006,0.1197,,1,17088.11,5,blob only clips this field; see Q-03
 -75348193_38440490,0,negative,negative_pass,,212,tien,,,,,107924.24,26,
@@ -233,7 +232,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75653292_38351608,0,negative,negative_pass,,291,tien,,,,,12591.42,5,
 -75653746_38410132,0,negative,negative_pass,,655,sienna,,,,,132208.12,5,
 -75654361_38414297,,excluded_band,legacy_seed,156,,sienna,0.0004,0.0015,,1,71949.93,5,blob only clips this field; see Q-03
--75655361_38386599,0,negative,negative_pass,,614,sienna,,,,,53063.41,5,
 -75656416_38314465,0,negative,negative_pass,,782,mara,,,,,210458.32,5,
 -75659081_38027389,,excluded_band,legacy_seed,19,,sienna,0.0004,0.0006,,1,317507.02,26,blob only clips this field; see Q-03
 -75659660_38031897,,excluded_band,legacy_seed,19,,sienna,0.0006,0.0131,,1,18888.5,5,blob only clips this field; see Q-03
@@ -289,7 +287,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75696057_38355365,0,negative,negative_pass,,623,sienna,,,,,33277.29,5,
 -75697546_38469338,1,positive,legacy_seed,269,,mara,0.0477,0.9454,field_coverage,1,18886.62,26,
 -75697759_38478770,,excluded_band,legacy_seed,273,,tien,0.0723,0.0572,,1,98030.33,5,blob only clips this field; see Q-03
--75698348_38464940,0,negative,negative_pass,,28,maddie,,,,,44968.19,5,
 -75698851_38470471,1,positive,legacy_seed,269,,mara,0.182,0.8825,both,1,86338.8,5,
 -75699563_38509321,1,positive,legacy_seed,297,,maddie,0.6051,0.9884,both,2,78243.84,48,
 -75699635_38507889,1,positive,legacy_seed,297,,maddie,0.2098,0.9302,both,2,28779.36,5,
@@ -306,7 +303,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75702743_38528410,1,positive,legacy_seed,332,,mike,0.133,0.9491,field_coverage,1,43168.83,1,
 -75704441_38468613,,excluded_band,legacy_seed,269,,mara,0.0699,0.4161,,1,62955.4,5,blob only clips this field; see Q-03
 -75705318_38533900,1,positive,legacy_seed,357,,taryn,0.8588,0.4405,blob_share,3,538710.36,5,
--75705820_38608508,0,negative,negative_pass,,413,taryn,,,,,11691.34,5,
 -75705965_38473969,0,negative,negative_pass,,476,taryn,,,,,40471.28,1,
 -75706178_38595732,,excluded_band,legacy_seed,482,,mike,0.0014,0.0786,,1,14389.39,5,blob only clips this field; see Q-03
 -75706213_38587557,,excluded_band,legacy_seed,482,,mike,0.0,0.0,,1,67450.39,5,blob only clips this field; see Q-03
@@ -324,7 +320,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75711092_38591858,1,positive,legacy_seed,482,,mike,0.0888,0.9999,field_coverage,1,62054.29,5,
 -75711313_38460087,,excluded_band,legacy_seed,266,,maddie,0.0233,0.1477,,1,31477.76,5,blob only clips this field; see Q-03
 -75711370_38643440,0,negative,negative_pass,,471,taryn,,,,,63852.22,1,
--75711576_38514395,0,negative,negative_pass,,295,tien,,,,,12590.95,5,
 -75711714_38532964,1,positive,legacy_seed,352,,mike,0.969,0.8475,both,2,140298.55,1,
 -75711852_38606463,1,positive,legacy_seed,523,,sienna,0.9554,0.9616,both,4,176269.58,5,
 -75713187_38288188,0,negative,negative_pass,,963,ayush,,,,,205063.18,1,
@@ -658,7 +653,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75789894_39114226,0,negative,negative_pass,,671,sienna,,,,,382172.79,5,
 -75790529_38468246,0,negative,negative_pass,,850,mike,,,,,13490.45,5,
 -75791907_38667981,0,negative,negative_pass,,246,tien,,,,,14389.15,5,
--75792578_39208952,0,negative,negative_pass,,551,taryn,,,,,304832.37,1,
 -75792592_39006746,,excluded_band,legacy_seed,1212,,sienna,0.0007,0.0016,,1,321033.02,1,blob only clips this field; see Q-03
 -75792640_38568086,,excluded_band,legacy_seed,404,,mike,0.0021,0.0622,,1,13490.14,5,blob only clips this field; see Q-03
 -75792904_38944103,0,negative,negative_pass,,177,maddie,,,,,54855.18,37,
@@ -844,7 +838,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75832130_38734211,1,positive,legacy_seed,828,,mike,0.1015,0.8593,field_coverage,1,35073.03,5,
 -75832192_39143781,,excluded_band,legacy_seed,1505,,taryn,0.0003,0.0596,,1,29674.39,1,blob only clips this field; see Q-03
 -75832199_38670803,,excluded_band,legacy_seed,701,,tien,0.004,0.0027,,1,363325.84,26,blob only clips this field; see Q-03
--75832363_38990835,0,negative,negative_pass,,632,sienna,,,,,195138.44,1,
 -75832624_39349419,1,positive,legacy_seed,1527,,maddie,0.9796,0.1749,blob_share,1,785884.65,1,
 -75832671_38528239,,excluded_band,legacy_seed,327,,tien,0.0031,0.0013,,1,342652.62,26,blob only clips this field; see Q-03
 -75833012_39178474,1,positive,legacy_seed,1374,,taryn,0.8011,0.1887,blob_share,2,908208.99,5,
@@ -1058,7 +1051,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75867398_39063901,,excluded_band,legacy_seed,1308,,tien,0.0047,0.0041,,1,562025.28,1,blob only clips this field; see Q-03
 -75867526_38933030,,excluded_band,legacy_seed,1505,,taryn,0.0032,0.2654,,1,83631.87,1,blob only clips this field; see Q-03
 -75867568_38970422,,excluded_band,legacy_seed,1505,,taryn,0.0002,0.0497,,1,32373.36,26,blob only clips this field; see Q-03
--75867685_39241654,0,negative,negative_pass,,571,taryn,,,,,26076.91,5,
 -75867756_38543695,0,negative,negative_pass,,689,sienna,,,,,46766.07,4,
 -75867983_39009513,1,positive,legacy_seed,1216,,taryn,0.0118,0.7127,field_coverage,1,34171.56,5,
 -75868275_38945557,,excluded_band,legacy_seed,1505,,taryn,0.0001,0.0588,,1,10791.18,5,blob only clips this field; see Q-03
@@ -1203,8 +1195,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75887998_39060786,,excluded_band,legacy_seed,1301,,maddie,0.0823,0.1418,,1,143878.57,26,blob only clips this field; see Q-03
 -75888199_38471568,1,positive,legacy_seed,271,,mike,0.8805,0.8758,both,1,341757.69,1,
 -75888488_39210256,,excluded_band,legacy_seed,1402,,taryn,0.0182,0.078,,1,26976.31,5,blob only clips this field; see Q-03
--75888782_38595818,0,negative,negative_pass,,26,maddie,,,,,76443.63,1,
--75888790_38783223,0,negative,negative_pass,,339,tien,,,,,12590.18,5,
 -75888792_39043463,1,positive,legacy_seed,1285,,mara,0.0432,0.9999,field_coverage,1,38667.52,5,
 -75888864_38792967,,excluded_band,legacy_seed,1505,,taryn,0.0038,0.0822,,1,324645.95,5,blob only clips this field; see Q-03
 -75889029_38877449,1,positive,legacy_seed,1037,,mike,0.9695,0.5114,blob_share,5,3024274.84,26,
@@ -1533,7 +1523,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75959050_39653855,0,negative,negative_pass,,765,mara,,,,,11688.54,1,
 -75959098_38513614,1,positive,legacy_seed,308,,maddie,0.6214,0.9181,both,2,404709.16,1,
 -75959312_38709760,1,positive,legacy_seed,775,,mara,0.9764,0.4219,blob_share,3,1000935.78,5,
--75959708_39025312,0,negative,negative_pass,,167,maddie,,,,,615985.17,5,
 -75959949_38990777,1,positive,legacy_seed,1219,,mara,0.9606,0.2783,blob_share,2,3400085.14,1,
 -75959997_39399474,0,negative,negative_pass,,261,tien,,,,,24277.62,26,
 -75960358_39179598,1,positive,legacy_seed,1375,,taryn,0.028,0.9885,field_coverage,1,26976.5,26,
@@ -1549,7 +1538,6 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75964233_39348779,0,negative,negative_pass,,913,mike,,,,,21580.36,5,
 -75965507_38735703,1,positive,legacy_seed,838,,tien,0.9818,0.6069,blob_share,1,259000.72,26,
 -75965833_39352055,0,negative,negative_pass,,805,mara,,,,,19781.98,5,
--75966088_38588376,0,negative,negative_pass,,561,taryn,,,,,13490.07,1,
 -75966978_39080540,1,positive,legacy_seed,1320,,ayush,0.9817,0.7999,both,3,1210373.03,1,
 -75967437_38972196,1,positive,legacy_seed,1167,,mike,0.873,0.9487,both,1,473909.69,1,
 -75967617_39201707,1,positive,legacy_seed,1391,,maddie,0.9582,0.9271,both,2,259872.27,1,
@@ -1564,11 +1552,9 @@ field_id,label_class,sample_type,source,source_point_id,source_queue_id,source_l
 -75969982_38735323,,excluded_band,legacy_seed,838,,tien,0.0003,0.0014,,1,32375.09,5,blob only clips this field; see Q-03
 -75972065_38761857,1,positive,legacy_seed,899,,mike,0.3146,0.58,blob_share,1,123204.46,48,
 -75972320_38700335,,excluded_band,legacy_seed,766,,sienna,0.0019,0.0015,,1,280586.38,5,blob only clips this field; see Q-03
--75972528_39040628,0,negative,negative_pass,,415,taryn,,,,,2297571.6,1,
 -75972767_39201989,1,positive,legacy_seed,1392,,mara,0.941,0.9632,both,2,192431.36,26,
 -75973364_39668589,0,negative,negative_pass,,29,maddie,,,,,86315.09,1,
 -75973453_38966827,,excluded_band,legacy_seed,1167,,mike,0.0006,0.0012,,1,265281.84,5,blob only clips this field; see Q-03
--75973986_38843529,0,negative,negative_pass,,977,ayush,,,,,296764.33,1,
 -75974101_39117837,1,positive,legacy_seed,1333,,mike,0.5213,0.9812,both,1,462203.88,1,
 -75974375_38858564,1,positive,legacy_seed,1015,,ayush,0.9504,0.4385,blob_share,2,446044.25,1,
 -75974613_39185595,,excluded_band,legacy_seed,1373,,taryn,0.0003,0.0037,,2,65642.72,26,blob only clips this field; see Q-03

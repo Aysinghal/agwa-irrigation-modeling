@@ -102,9 +102,9 @@ and reports these; `2026-10-05-promotion-overlap-measure` records the run.
 | **Positive fields** | **881** |
 | — from the legacy seed | 868 |
 | — recovered from negative-pass rejections | 13 |
-| **Negative fields** | **947** |
+| **Negative fields** | **933** |
 | Excluded band | 582 |
-| Class ratio | 1 : 1.07 |
+| Class ratio | 1 : 1.06 |
 | Prevalence if applied to all CDL fields | 2.35% |
 
 Positives divide by which promotion condition fired: 246 on label share alone,
@@ -114,7 +114,8 @@ measure would have dropped one or the other.
 
 Underlying human decisions: 693 hand-drawn positive polygons from 780 points
 viewed, so 87 skips; 947 confirmed negatives and 53 rejections from 1000
-candidates. The positive target was 700, and one labeler exhausted a full
+candidates, with 14 of the confirmed negatives then dropped by the legacy-map
+backstop. The positive target was 700, and one labeler exhausted a full
 120-point queue at a 22.5% skip rate without reaching 100.
 
 The 881 positives trace to 635 distinct hand-drawn labels, since CDL fragments
@@ -134,10 +135,6 @@ What still needs measuring:
 
 - Geographic distribution of each class, by county and by physiographic region
 - Crop class composition, per class
-
-**The negative count is provisional.** `merge_training_set.js` applies a
-backstop dropping confirmed negatives that overlap the legacy truss map, and
-that asset is not yet exported, so the rebuild cannot apply it.
 
 ## Known biases and limitations
 
@@ -213,7 +210,7 @@ to production by an amount not yet quantified. `A-04` is refuted.
 
 **Negatives may contain trusses.** Labelers caught 19 truss-bearing fields in
 the negative queue, at rates from 5.0 to 0.0 per 100 reviewed. The spread implies
-some were missed — on the order of 1-3% of the 947 confirmed negatives, though
+some were missed — on the order of 1-3% of the 933 negatives retained, though
 the estimate is underpowered. The automated backstop cannot correct this: it
 drops negatives overlapping the legacy truss map, and these are by construction
 fields the legacy map does not contain
