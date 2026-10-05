@@ -1,0 +1,31 @@
+# Imagery and other large artifacts never enter git.
+# Chips live in object storage; see spec/pipeline.md.
+*.tif
+*.tiff
+*.jp2
+*.npy
+*.npz
+*.zip
+data/chips/
+data/cache/
+results/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rebuildable Earth Engine exports — deterministic outputs of gee/labeling/,
+# not irreplaceable. Kept locally as Script 9 inputs, not committed.
+data/raw/cdl_fields_md_2022*
+data/raw/cdl_fields_positive_md_2022*
+data/raw/cdl_fields_excluded_md_2022*
+
+# Script 9 output — regenerate with scripts/build_label_table.py
+data/labels.geojson

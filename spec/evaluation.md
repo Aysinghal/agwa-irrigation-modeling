@@ -26,6 +26,18 @@ by construction, while irrigated fields are a small minority of Coastal Plain
 CDL fields. Any metric sensitive to prevalence must state which prevalence it
 assumes.
 
+### Label defects bound every number reported here
+
+Two defects recorded in `data.md` sit underneath every metric below and are not
+correctable here: positives are systematically easier than the population
+(`A-04`, refuted), and a small share of negatives carry an undetected truss.
+
+They push scores in opposite directions. Easier positives inflate recall; hidden
+trusses turn correct detections into apparent false positives and deflate
+precision. Neither shifts with the choice of metric, split, or threshold, so
+both are stated alongside results rather than corrected for. `Q-05` would size
+them.
+
 ## Splits
 
 The requirements below are fixed. The specific partitioning scheme that
@@ -72,8 +84,8 @@ anywhere in the final number.
 
 ### Report spread, not a point
 
-With roughly 1500 fields, any single test partition is small enough that one
-number is dominated by which fields happened to land in it. Results are reported
+At this dataset size (`data.md`) any single test partition is small enough
+that one number is dominated by which fields happened to land in it. Results are reported
 as a mean and a spread across spatial cross-validation folds.
 
 ## Metrics
@@ -149,6 +161,12 @@ broken pipeline rather than a hard problem.
 research proposal notes that vegetation indices alone overestimate irrigation,
 so this is expected to have high recall and poor precision — which is itself a
 useful reference point.
+
+**Field area.** Area alone reaches ROC-AUC 0.763 and PR-AUC 0.781 on the
+labeled set, floor 0.486 (`2026-10-05-field-area-baseline`). The demanding
+floor: field size is measurable from a cropped chip without resolving any
+structure, so a model scoring near it has not shown it can see a truss. Added
+after the measurement rather than before, per Preregistration.
 
 **Whole-field classifier.** The alternative framing in `Q-06`. It doubles as
 both a candidate approach and a baseline: if the MIL model cannot beat a resized

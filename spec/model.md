@@ -186,7 +186,7 @@ decisions and belong in the research log alongside the runs that set them.
 
 ## Constraints shaping these choices
 
-**Dataset size.** Roughly 1500 labeled fields (`data.md`, pending exact counts).
+**Dataset size.** Small; see `data.md` for the count.
 Tiling multiplies the number of images but not the number of independent labels
 — that is inherent to weak supervision, not a shortcoming of it. Effective
 sample size is the field count, and every choice above is made under that

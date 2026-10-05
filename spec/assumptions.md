@@ -58,10 +58,14 @@ no way to correct after the fact.
 **How we would find out:** a small overlap round, where several labelers relabel
 the same sample, yields an inter-rater agreement figure. This can be done now —
 the labeling interface still works.
+**Circumstantial evidence against:** labelers diverge sharply on both adjacent
+judgments, skip rate and truss detection (`A-04`, `data.md`). Status stays
+`untested`: no field was labeled twice, so there is no agreement to measure and
+none of this substitutes for the round in `Q-05`.
 
 ### A-04 — Skips were not driven by difficulty
 
-**Status:** untested
+**Status:** refuted by `2026-09-15-labeler-skip-rate-heterogeneity`
 **We assume:** points skipped during positive labeling were skipped for reasons
 uncorrelated with how hard the field is to classify.
 **Why:** skipping was intended for unusable points — bad imagery, a point not on
@@ -70,12 +74,17 @@ a field — rather than for hard calls.
 every metric is optimistic relative to production.
 **How we would find out:** skip reasons were required free text and are stored
 with the progress assets. Read them.
+**What we found:** the reasons pass and the rates do not. Notes describe the
+scene, as assumed, but skip rate varies elevenfold across labelers on randomly
+dealt queues (`data.md`), so the decision turns on where each set their
+threshold. The **If wrong** consequence holds, by a mechanism the stated test
+could not detect.
 
 ## Field geometry
 
 ### A-05 — CDL polygons approximate real fields well enough
 
-**Status:** untested
+**Status:** refuted by `2026-09-17-negative-pass-rejections`
 **We assume:** a CDL-derived polygon corresponds closely enough to a real
 agricultural field to serve as the unit of prediction.
 **Why:** CDL is the only statewide field-boundary source available without cost
@@ -86,6 +95,11 @@ claim. Downstream aggregation inherits the error.
 **How we would find out:** the overlap-ratio distribution between hand-drawn
 labels and CDL fields already measures this, and is currently used only to set a
 threshold. How tight the upper cluster is constitutes the evidence.
+**What we found:** 34 of 1001 randomly drawn CDL polygons are not agricultural
+land at all — 3.4%, a lower bound since rejection was discretionary, and it
+applies to the whole inference population. The overlap-ratio test named above is
+still unrun and measures a different failure: how well boundaries match fields
+that are genuinely fields.
 
 ### A-06 — The 1-hectare floor does not exclude a meaningful share of irrigated fields
 
@@ -143,9 +157,9 @@ detector, if one is built, offers a second and cheaper route: fields it flags as
 behaving irrigated while carrying no truss are candidates for precisely the
 systems this assumption overlooks (`Q-08`).
 
-### A-10 — The sub-threshold band is small enough to leave undefined
+### A-10 — The excluded band is small enough to leave undefined
 
-**Status:** untested
+**Status:** refuted by `2026-10-05-promotion-overlap-measure`
 **We assume:** fields overlapping a hand-drawn label by more than zero but less
 than the promotion threshold are few enough that having no training examples and
 no agreed label for them does not materially affect production accuracy.
@@ -154,13 +168,16 @@ anyone measured how large it is.
 **If wrong:** a meaningful share of the fields we score in production fall in a
 region where model behaviour is undefined and unvalidated.
 **How we would find out:** count them. One query.
+**What we found:** the band is comparable in size to the positive set
+(`data.md`). Not few enough, and every one of those fields is scored at
+inference. `Q-03` has to decide what happens to them.
 
 ## Detectability
 
 ### A-11 — A truss is resolvable in NAIP
 
 **Status:** supported
-**We assume:** center-pivot trusses are visible in 0.6–1.0 m four-band imagery
+**We assume:** center-pivot trusses are visible at NAIP resolution (`data.md`)
 at the scale a model will see.
 **Why:** labelers located trusses in NAIP throughout the labeling effort, and
 the team has worked examples.
@@ -209,7 +226,7 @@ are retired rather than refuted if the framing changes.
 **Status:** untested
 **We assume:** a backbone pretrained on some other imagery produces features
 useful for finding trusses in sub-metre aerial imagery.
-**Why:** training from scratch on roughly 1500 fields is not viable, so transfer
+**Why:** training from scratch on a dataset this size is not viable, so transfer
 is what makes a dataset this size workable at all. But neither candidate family
 (`Q-07`) matches our data cleanly. Geospatial foundation models are pretrained
 on Earth observation imagery, largely at 10–30 m, where a truss is not
@@ -241,7 +258,7 @@ supports it; a long flat distribution refutes it.
 ### A-16 — Field-level supervision is sufficient at this dataset size
 
 **Status:** untested
-**We assume:** roughly 1500 field-level labels are enough to train tile-level
+**We assume:** the field-level labels in `data.md` are enough to train tile-level
 discrimination through aggregation.
 **Why:** no tile-level labels exist, and producing them would mean relabeling at
 far finer granularity than the effort already spent.

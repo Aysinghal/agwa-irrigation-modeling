@@ -16,6 +16,7 @@ New to the project, read in this order:
 3. `spec/data.md` — where the training data came from
 4. `spec/assumptions.md` — what the project currently stands on
 5. `spec/model.md` and `spec/evaluation.md` — what we are building and how we judge it
+6. `spec/decisions/` — the choices already made, and what they cost
 
 You do not need to read `research-log/` to work on the project. Read it when you
 want to know *why* the spec says what it says.
@@ -58,6 +59,11 @@ between them.
 | `spec/open-questions.md` | spec | Undecided things, and parked work. Items graduate off this list into decisions. |
 | `spec/decisions/` | record | One ADR per decision. Never edited; superseded. |
 | `research-log/` | record | One entry per experiment or investigation. Dated, append-only. |
+| `gee/labeling/` | record | Vendored Earth Engine code that built the dataset. Never modified in place. |
+| `gee/export/` | code | Scripts that pull assets out of Earth Engine. |
+| `scripts/` | code | Local processing. Builds the label table. |
+| `data/` | data | The labels, and the exports they are built from. See below. |
+| `CLAUDE.md` | code | Points Claude Code at this file. |
 
 ## ID conventions
 
@@ -109,7 +115,13 @@ Every file opens with a single `#` title and goes straight into prose.
 
 ### Spec files
 
-- **Present tense.** Describe what is true now, not how it came to be true.
+- **Say it once, in as few words as it takes.** Every sentence a reader does
+  not need is a sentence that can go stale. A number and a link beats a
+  paragraph explaining the number.
+- **Present tense.** Describe what is true now, not how it came to be true. No
+  no narrating how a value changed — state the current figure, not the figure
+  it replaced.
+  The log holds the change; the spec holds the state.
 - **One fact, one home.** Each fact lives in exactly one file; everywhere else
   links to it. The moment a threshold is stated in two files, they will disagree
   within a month.
@@ -199,8 +211,11 @@ spec silently drifts out of date.
 - **Task tracking.** `open-questions.md` holds open *research* questions. Work
   items go in issues.
 - **Water-balance work.** Separate repository. See `problem-statement.md`.
-- **Raw data and large files.** Data lives in Earth Engine assets and object
-  storage; `pipeline.md` records where.
+- **Data that can be regenerated.** The hand-drawn labels are committed, under
+  `data/raw/`, because nothing can rebuild them and a distributed copy is the
+  only real backup. Everything else stays out: imagery, and any Earth Engine
+  asset the vendored scripts reproduce deterministically. `pipeline.md` records
+  what lives where.
 - **Personal scratch work.** Notebooks and one-off scripts that are not part of
   a reproducible result.
 - **Versioned filenames.** No `model-v2-final.md`. Git is the history.

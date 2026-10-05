@@ -3,7 +3,7 @@
 Shared vocabulary for this project. Terms are grouped by theme rather than
 alphabetized, because the groups build on each other.
 
-Definitions only — no values. What "overlap ratio" *means* is here; the
+Definitions only — no values. What "field coverage" *means* is here; the
 threshold it is set to lives in `data.md`. Same for dataset specifications,
 crop class ranges, and size floors.
 
@@ -127,8 +127,12 @@ from a hand-drawn label, and the two must not be used interchangeably.
 **Negative field** — A CDL field a labeler confirmed contains no visible truss.
 Class 0.
 
-**Overlap ratio** — The fraction of a CDL field's area covered by hand-drawn
-labels. The basis for promoting a field to positive.
+**Field coverage** — The fraction of a CDL field's area lying under hand-drawn
+labels. One of the two measures promotion uses.
+
+**Label share** — The fraction of a single hand-drawn label's area lying inside
+a given CDL field. The other. Unlike field coverage it does not depend on the
+field's shape, which is why both are needed; the rule combining them is `D-02`.
 
 **Exclusion set** — Every CDL field that touches any hand-drawn label at all,
 including touches too small to qualify as positive. Negatives are never sampled
