@@ -24,15 +24,29 @@ does exact polygon intersection locally, so this reuses it.
 
 The queues
 ----------
-Queue A — positive re-check. Fields where a script decided, not a person:
+Queue A — positive re-check. Every CDL field a round-1 hand-drawn label touched
+at all, plus the fields under the 87 skipped pivots. Tagged by how round 1
+decided it:
 
-  band            576  touched a hand-drawn label, failed both D-02 measures
-  single_measure  461  promoted on one D-02 measure only
-  skipped_point     ?  under one of the 87 skipped pivots; counted at runtime
+  both_measures   407  both D-02 measures promoted it
+  single_measure  461  one D-02 measure promoted it
+  band            576  neither did
+  skipped_point     ?  under a skipped pivot; counted at runtime
 
-The 407 fields both D-02 measures agreed on are left alone. So are the 6 band
-fields and 13 positives originating in the negative pass — D-03 keeps
-negative-pass provenance out of the positive queue.
+The 407 are included rather than trusted. Two measures agreeing establishes
+which field a blob maps to; it is silent on whether a truss is there. That claim
+rests on one person looking once, having been shown a legacy-map pin saying a
+pivot was present — which is the shape of error that over-calls. The 407 and the
+461 carry identical truss evidence and differ only in geometric certainty, so
+excluding the 407 would leave the project's largest block of positives as the
+one group nobody ever re-checked.
+
+Sampling them was the alternative. It was rejected because a rate does not fix
+labels: any non-zero result forces a review of the rest to find out which ones,
+so sampling only saves work in the case where nothing is wrong.
+
+The 6 band fields and 13 positives originating in the negative pass stay out —
+D-03 keeps negative-pass provenance out of the positive queue.
 
 Queue B — negative re-check. All 933 confirmed negatives. The trusses being
 looked for are by definition the ones nobody flagged, so no subset of the 933 is
@@ -215,14 +229,20 @@ log("\nSelecting queue members from labels.csv...")
 queued: dict[str, dict] = {}
 already_classed: set[str] = set()
 
+sample_type_by_field = {r["field_id"]: r["sample_type"] for r in label_rows}
+
 for r in label_rows:
     fid = r["field_id"]
     already_classed.add(fid)
 
-    if r["sample_type"] == "excluded_band" and r["source"] == "legacy_seed":
-        queue, origin = "A", "band"
-    elif r["sample_type"] == "positive" and r["promoted_by"] in ("blob_share", "field_coverage"):
-        queue, origin = "A", "single_measure"
+    if r["source"] == "legacy_seed":
+        queue = "A"
+        origin = {
+            "both": "both_measures",
+            "blob_share": "single_measure",
+            "field_coverage": "single_measure",
+            "": "band",
+        }[r["promoted_by"]]
     elif r["sample_type"] == "negative":
         queue, origin = "B", "negative"
     else:
@@ -251,7 +271,8 @@ assign_by_point = {f["properties"]["point_id"]: f["properties"] for f in assign_
 skipped = [f for f in progress_raw if f["properties"].get("status") == "skipped"]
 log(f"  skipped markers            {len(skipped):>5,}")
 
-no_acres = added = already = 0
+no_acres = added = 0
+already: Counter[str] = Counter()
 radii: list[float] = []
 per_pivot: list[int] = []
 
@@ -279,7 +300,16 @@ for f in skipped:
         hits += 1
         fid = cdl_keys[idx]
         if fid in queued or fid in already_classed:
-            already += 1
+            # Already covered, so do not ask twice — but keep the hint that a
+            # reported pivot sits here. If the re-review finds a truss on it,
+            # that the legacy map agreed is worth knowing.
+            covered_as = (
+                queued[fid]["origin"] if fid in queued
+                else sample_type_by_field.get(fid, "unknown")
+            )
+            already[covered_as] += 1
+            if fid in queued and not queued[fid]["pivot_point_id"]:
+                queued[fid]["pivot_point_id"] = str(pid)
             continue
         queued[fid] = {
             "field_id": fid,
@@ -302,8 +332,10 @@ per_pivot.sort()
 log(f"  pivot radius m  min/median/max   "
     f"{radii[0]:.0f} / {radii[len(radii) // 2]:.0f} / {radii[-1]:.0f}")
 log(f"  fields found under a pivot       {sum(per_pivot):>5,}")
-log(f"    already classed or queued      {already:>5,}")
 log(f"    added to queue A               {added:>5,}")
+log(f"    already covered               {sum(already.values()):>5,}")
+for st, n in already.most_common():
+    log(f"      in queue as {st:<16} {n:>5,}")
 log(f"  fields per pivot, median         {per_pivot[len(per_pivot) // 2]:>5,}")
 log(f"  pivots matching no field         {sum(1 for n in per_pivot if n == 0):>5,}")
 
