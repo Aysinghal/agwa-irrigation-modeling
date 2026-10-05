@@ -29,3 +29,6 @@ data/raw/cdl_fields_excluded_md_2022*
 
 # Script 9 output — regenerate with scripts/build_label_table.py
 data/labels.geojson
+
+# Script 10 output — regenerate with scripts/build_review_queues.py
+data/review_queues.geojson
