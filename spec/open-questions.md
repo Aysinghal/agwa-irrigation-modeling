@@ -58,12 +58,10 @@ before training than after.
 **Options:** leave them excluded; lower one of the `D-02` thresholds; treat the
 band as an explicit ignore class, excluded from training but reported separately
 at inference; hand-relabel the band.
-**What would settle it:** counting it refuted `A-10` — the band held 730
-fields against 714 positives. `D-02` then shrank it to 582 and changed its
-character: a field now enters the band only by failing both overlap measures,
-so the genuine-partial-coverage cases that used to be mixed in are promoted,
-and what remains should be mostly label slivers. Confirming that on a sample is
-what is left, and it is a smaller question than it was.
+**What would settle it:** counting it refuted `A-10` — the band is comparable
+in size to the positive set (`data.md`). A field enters it only by failing both
+`D-02` measures, so what remains should be mostly label slivers rather than
+genuine partial coverage. Confirming that on a sample is what is left.
 
 ## Q-04 — Three channels or four?
 
@@ -93,8 +91,8 @@ under `A-03`.
 **Options:** no round; a small round on a sample, all labelers; a round on
 positives only, where errors are most consequential; or a targeted round that
 doubles as a measurement — re-review a sample of one labeler's confirmed
-negatives using a labeler with a high truss-detection rate, and re-label the 87
-skipped positive points.
+negatives using a labeler with a high truss-detection rate, and re-label the
+skipped positive points (`data.md`).
 **What would settle it:** whether the resulting number would change anything.
 That test now has answers it did not have before. A round would size two
 quantities the project already needs and cannot otherwise obtain: how many

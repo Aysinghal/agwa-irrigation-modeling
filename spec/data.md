@@ -153,9 +153,9 @@ weighted accordingly.
 
 **Positives are far larger than negatives.** Negatives carry the CDL
 population's size distribution and positives do not (see Composition). Area
-alone reaches ROC-AUC 0.763 on the labeled set, so a model can score well by
-learning size rather than structure; `evaluation.md` carries area as a baseline
-accordingly (`2026-10-05-field-area-baseline`).
+alone is therefore a usable predictor, so a model can score well by learning
+size rather than structure. `evaluation.md` carries it as a baseline and holds
+the figure.
 
 **Labels are inconsistent about what they trace.** The protocol asks for the
 field outline; most labelers drew the pivot circle, and median label area over

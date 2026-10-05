@@ -113,7 +113,8 @@ Every file opens with a single `#` title and goes straight into prose.
   not need is a sentence that can go stale. A number and a link beats a
   paragraph explaining the number.
 - **Present tense.** Describe what is true now, not how it came to be true. No
-  narrating how a value changed: "881 positives", never "714 before, 881 now".
+  no narrating how a value changed — state the current figure, not the figure
+  it replaced.
   The log holds the change; the spec holds the state.
 - **One fact, one home.** Each fact lives in exactly one file; everywhere else
   links to it. The moment a threshold is stated in two files, they will disagree

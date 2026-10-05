@@ -75,9 +75,10 @@ every metric is optimistic relative to production.
 **How we would find out:** skip reasons were required free text and are stored
 with the progress assets. Read them.
 **What we found:** the reasons pass and the rates do not. Notes describe the
-scene, as assumed, but skip rate ranges 2.0% to 22.5% on randomly dealt queues,
-so the decision turns on where each labeler set their threshold. The **If
-wrong** consequence holds, by a mechanism the stated test could not detect.
+scene, as assumed, but skip rate varies elevenfold across labelers on randomly
+dealt queues (`data.md`), so the decision turns on where each set their
+threshold. The **If wrong** consequence holds, by a mechanism the stated test
+could not detect.
 
 ## Field geometry
 
@@ -167,15 +168,16 @@ anyone measured how large it is.
 **If wrong:** a meaningful share of the fields we score in production fall in a
 region where model behaviour is undefined and unvalidated.
 **How we would find out:** count them. One query.
-**What we found:** 582 fields, against 881 positives. Not few enough, and
-every one is scored at inference. `Q-03` has to decide what happens to them.
+**What we found:** the band is comparable in size to the positive set
+(`data.md`). Not few enough, and every one of those fields is scored at
+inference. `Q-03` has to decide what happens to them.
 
 ## Detectability
 
 ### A-11 — A truss is resolvable in NAIP
 
 **Status:** supported
-**We assume:** center-pivot trusses are visible in 0.6–1.0 m four-band imagery
+**We assume:** center-pivot trusses are visible at NAIP resolution (`data.md`)
 at the scale a model will see.
 **Why:** labelers located trusses in NAIP throughout the labeling effort, and
 the team has worked examples.

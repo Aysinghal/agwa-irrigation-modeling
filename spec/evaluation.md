@@ -30,7 +30,7 @@ assumes.
 
 Two defects recorded in `data.md` sit underneath every metric below and are not
 correctable here: positives are systematically easier than the population
-(`A-04`, refuted), and an estimated 1-3% of negatives carry an undetected truss.
+(`A-04`, refuted), and a small share of negatives carry an undetected truss.
 
 They push scores in opposite directions. Easier positives inflate recall; hidden
 trusses turn correct detections into apparent false positives and deflate
