@@ -16,12 +16,14 @@ here.
 **The cluster** — UMD Zartan or Nexus — is where training runs. Nothing is there
 yet.
 
-**This repository** holds the specification, the research log, and the labeling
-code that produced the dataset.
+**This repository** holds the specification, the research log, the labeling code
+that produced the dataset, and — since the export — the labels themselves and
+the code that assembles them.
 
-Data currently moves in one direction only: public datasets into Earth Engine,
-through the labeling scripts, into project assets. The path out of Earth Engine
-and onto the cluster does not exist yet.
+Data now moves out of Earth Engine as well as in. Labels and the CDL field set
+are exported to Drive, pulled into `data/raw/`, and assembled by
+`scripts/build_label_table.py` into `data/labels.csv`. The path onto the cluster
+does not exist yet.
 
 ## Earth Engine
 
@@ -119,8 +121,21 @@ should not wait on decisions about training data formats.
 
 ## Getting data out of Earth Engine
 
-**Not yet decided.** The route — Drive, Cloud Storage, or direct download — and
-the format for both label tables and imagery are open.
+**Labels: done, via Drive.** `gee/export/backup_all_labels.js` merges each
+per-labeler folder tree into one collection and exports it, so the whole label
+set comes out in ten files rather than fifteen hundred.
+`gee/export/export_cdl_fields.js` exports the CDL field set and the promotion
+outputs. Both write GeoJSON to Drive, which is a staging area only — the
+committed copy in this repository is the backup, since Drive belongs to one
+person's account.
+
+`center_pivot_irrigation_trusses` is **not yet exported**, which is why the
+rebuild cannot apply the legacy backstop.
+
+**Imagery: not yet decided.** The route and format for per-field chips are
+open. Sizing: at NAIP resolution the labeled set is on the order of a few GB,
+and statewide inference on the order of 100 GB, which is not stored — fields are
+scored and the pixels discarded.
 
 One consequence reaches into the model: if per-field image chips are exported,
 tiling can happen server-side in Earth Engine or locally after export. Those are
@@ -144,9 +159,19 @@ each cluster makes available.
 
 ## Repository layout
 
-`spec/` holds the specification. `research-log/` holds dated entries.
-`gee/labeling/` holds the vendored Earth Engine code, which is a record of how
-the dataset was made and is not modified in place — changes to labeling would
-be new scripts, not edits to these.
+| Path | Holds |
+|---|---|
+| `spec/` | The specification, including `spec/decisions/` |
+| `research-log/` | Dated entries |
+| `gee/labeling/` | Vendored labeling code. A record, never modified in place. |
+| `gee/export/` | Scripts that pull assets out of Earth Engine |
+| `scripts/` | Local processing. `build_label_table.py` builds the label table. |
+| `data/raw/` | Earth Engine exports, as exported |
+| `data/` | `labels.csv`, the assembled table every later stage reads |
+
+Only irreplaceable data is committed. `data/raw/` holds the human labels, which
+nothing can regenerate. The CDL exports under the same directory are
+deterministic outputs of `gee/labeling/` and are gitignored, as is
+`data/labels.geojson`, which `scripts/build_label_table.py` rebuilds.
 
 Layout for training code is not yet established.

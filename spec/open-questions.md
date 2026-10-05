@@ -46,22 +46,24 @@ whether any labeled linear-move examples exist to test against. Note that none
 currently do, so a pilot needs labels created first. USGS iMaps 2020 and 2023
 are available by county.
 
-## Q-03 — How should the sub-threshold overlap band be labeled?
+## Q-03 — How should the excluded overlap band be labeled?
 
 **Status:** open
-**The question:** what happens to fields a hand-drawn label touches by more than
-zero but less than the promotion threshold?
+**The question:** what happens to fields a hand-drawn label touches without
+satisfying either promotion condition in `D-02`?
 **Why it matters:** these fields are currently in neither class and absent from
 training, yet they are scored at inference (`data.md`). The answer determines
 whether the dataset has to be regenerated, which is far cheaper to establish
 before training than after.
-**Options:** leave them excluded; promote those above some lower bound to
-positive; treat the band as an explicit ignore class, excluded from training but
-reported separately at inference; hand-relabel the band.
-**What would settle it:** count the band first (A-10). If it is small, the
-status quo is defensible. If it is not, inspect a sample to determine whether it
-is dominated by label slivers or by genuine partial coverage — the promotion
-threshold cannot tell those apart, but a person can.
+**Options:** leave them excluded; lower one of the `D-02` thresholds; treat the
+band as an explicit ignore class, excluded from training but reported separately
+at inference; hand-relabel the band.
+**What would settle it:** counting it refuted `A-10` — the band held 730
+fields against 714 positives. `D-02` then shrank it to 582 and changed its
+character: a field now enters the band only by failing both overlap measures,
+so the genuine-partial-coverage cases that used to be mixed in are promoted,
+and what remains should be mostly label slivers. Confirming that on a sample is
+what is left, and it is a smaller question than it was.
 
 ## Q-04 — Three channels or four?
 

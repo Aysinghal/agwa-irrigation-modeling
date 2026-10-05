@@ -62,18 +62,20 @@ still visible, hand-drew a polygon around the whole field containing it. If the
 point was unusable, the labeler skipped it with a written reason. Skips are
 recorded but produce no label.
 
-Those hand-drawn polygons are not the training positives. To convert them onto
-consistent geometry, hand-drawn labels were rasterized at 10 m and the
-**overlap ratio** — the fraction of a CDL field's area covered by hand-drawn
-label — was computed for every field they touched. The distribution is bimodal:
-a cluster of small slivers where a label barely clips a neighboring field, and a
-cluster of near-complete matches. The threshold was set at **0.65**, in the
-valley between them. Fields at or above it become **positive fields**, class 1.
+Those hand-drawn polygons are not the training positives. Converting them onto
+consistent geometry needs a rule for which CDL fields a label promotes, and
+that rule is `D-02`: a field becomes a **positive field**, class 1, if at least
+0.15 of the label falls inside it, or at least 0.65 of it lies under the label.
+A field satisfying neither is a sliver and enters the excluded band (`Q-03`).
+
+Two measures rather than one because the labels are inconsistent about what
+they trace — see the limitation below — so either measure used alone discards a
+different group of genuinely irrigated fields.
 
 ## How negative labels were made
 
-Any CDL field touching a hand-drawn label *at all* — including slivers well
-below the promotion threshold — was placed in the **exclusion set**. Negatives
+Any CDL field touching a hand-drawn label *at all* — including slivers far
+below anything `D-02` would promote — was placed in the **exclusion set**. Negatives
 were never sampled from it, on the reasoning that even a slight touch means a
 truss is nearby.
 
@@ -91,49 +93,51 @@ examples lost.
 
 ## Composition
 
-**Partly measured.** The labels are exported and backed up
-(`2026-09-15-labeler-skip-rate-heterogeneity`), so the counts of human decisions
-are known. Field counts are not, because promotion sits between the two.
-
-What is known:
+Measured. `scripts/build_label_table.py` rebuilds the table from the exports
+and reports these; `2026-10-05-promotion-overlap-measure` records the run.
 
 | | count |
 |---|---|
-| Hand-drawn positive polygons | 693 |
-| Positive points skipped | 87 |
-| Confirmed negative fields | 947 |
-| Negative candidates rejected | 53 |
+| CDL fields in Maryland | 37,523 |
+| **Positive fields** | **881** |
+| — from the legacy seed | 868 |
+| — recovered from negative-pass rejections | 13 |
+| **Negative fields** | **947** |
+| Excluded band | 582 |
+| Class ratio | 1 : 1.07 |
+| Prevalence if applied to all CDL fields | 2.35% |
 
-The positive target was 700 — 100 per labeler. One labeler exhausted a full
+Positives divide by which promotion condition fired: 246 on label share alone,
+215 on field coverage alone, 407 on both. The two groups caught by one
+condition only are the large and the small fields respectively, and a single
+measure would have dropped one or the other.
+
+Underlying human decisions: 693 hand-drawn positive polygons from 780 points
+viewed, so 87 skips; 947 confirmed negatives and 53 rejections from 1000
+candidates. The positive target was 700, and one labeler exhausted a full
 120-point queue at a 22.5% skip rate without reaching 100.
 
-Three qualifications on the negative count. One confirmed negative
-(`field_450`) has a progress marker but no label asset, lost to a partially
-failed batch export. One (`field_343`) was rejected and then confirmed eight
-minutes later with a note reading "not a land", and is currently class 0. And
-19 of the 53 rejections were rejected *because a truss was visible*
-(`2026-09-17-negative-pass-rejections`); those fields are in neither class.
+The 881 positives trace to 635 distinct hand-drawn labels, since CDL fragments
+some fields and one label can promote several. That grouping is what the split
+requirement in `evaluation.md` acts on.
 
-**What promotion still hides.** 693 hand-drawn polygons do not yield 693
-positive fields. Each is promoted onto whatever CDL fields it overlaps by at
-least the threshold, which can be several fields or none, so the positive field
-count is a separate number and remains unmeasured.
+Two repairs are applied: `field_343` is dropped, having been rejected and then
+confirmed eight minutes later with a note reading "not a land", and `field_450`
+is restored from its progress marker after a partially failed batch export lost
+its label asset.
 
-Counts cannot be derived from the assignment design, because the pipeline
-transforms them at two points: promotion keeps only fields at or above the
-overlap threshold, and the backstop drops negatives overlapping the legacy map.
-The assignment targets — 100 positive points per labeler, 1000 negative
-candidates weighted across labelers — bound the result from above but do not
-determine it.
+Field areas differ sharply by class. The median CDL field is 4.0 ha; the median
+positive is substantially larger, which is a confound in its own right and is
+recorded below.
 
 What still needs measuring:
 
-- Positive and negative **field** counts, and the resulting class ratio
 - Geographic distribution of each class, by county and by physiographic region
-- Field area distribution, and crop class composition, per class
+- Crop class composition, per class
 
-These numbers will be filled in from a research-log entry that records the
-measurement.
+**The negative count is provisional.** `merge_training_set.js` applies a
+backstop dropping confirmed negatives that overlap the legacy truss map, and
+that asset is not yet exported, so the rebuild cannot apply it.
 
 ## Known biases and limitations
 
@@ -143,7 +147,9 @@ positive comes from there. The one exception proves the constraint is the
 sampling frame rather than the geography: 19 truss-bearing fields were found
 during the negative pass, which drew uniformly from statewide CDL fields, and
 those are the only positives the project has collected by a process that does
-not inherit the legacy map's footprint. They were discarded rather than promoted
+not inherit the legacy map's footprint. Thirteen are now promoted and tagged
+`negative_pass` so they stay distinguishable; the remaining six describe a truss
+at the boundary and sit with `Q-03`
 (`2026-09-17-negative-pass-rejections`). Negatives were drawn from CDL fields across the whole
 state, including the predominantly rainfed west. Class therefore correlates with
 region, and a model can score well by learning soil color, field geometry, tree
@@ -173,11 +179,30 @@ labelers disagree. Labeling load was also uneven by design, so three labelers
 account for the majority of negatives and their individual tendencies are
 weighted accordingly.
 
-**Promotion favors fields CDL represents well.** A hand-drawn label only
-produces a positive if some CDL field overlaps it by 65% or more. Where CDL
-fragments a real field into pieces, or merges it with a neighbor, no piece
-clears the threshold and the field is lost. Positives are therefore biased
-toward fields whose true boundaries the CDL happens to capture cleanly.
+**Positives are far larger than negatives.** Median positive field 23.7 ha
+against 3.7 ha for negatives, a factor of 6.4, and 4.0 ha for the CDL
+population as a whole. Center pivots sit on large fields, so this is partly
+real signal rather than an artifact — but it means field area alone separates
+the classes, and a model can learn size instead of structure. Thresholding on
+area is therefore a baseline `evaluation.md` has to beat, and the gap widened
+under `D-02`, which recovered large fields the old shape-dependent rule
+discarded. The per-field and area-weighted metrics in `evaluation.md` will
+diverge accordingly.
+
+**The labeling protocol was ambiguous and labelers diverged.** The instruction
+above asks for a polygon around the whole field. Median hand-drawn area over
+field area runs from 0.60 to 0.97 by labeler, overall median 0.78, which is
+what a circle inscribed in a square covers: most people traced the pivot rather
+than the field. `D-02` tolerates either, but the labels do not record which was
+intended in any given case, so no measure derived from label shape alone can be
+trusted. Any further labeling round should state which to draw
+(`2026-10-05-promotion-overlap-measure`).
+
+**Promotion can still lose fields CDL fragments.** A label is promoted onto
+whatever CDL fields satisfy either condition in `D-02`. Where CDL merges a real
+field with a neighbour, the merged polygon may satisfy neither, and the field is
+lost. This is narrower than the failure the single-threshold rule had, but it is
+not eliminated.
 
 **Skips are not random.** Labelers skipped points they found unusable, and skip
 rate ranges from 2.0% to 22.5% across the seven of them on queues dealt at

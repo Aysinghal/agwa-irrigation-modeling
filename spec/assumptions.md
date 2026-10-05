@@ -166,9 +166,9 @@ detector, if one is built, offers a second and cheaper route: fields it flags as
 behaving irrigated while carrying no truss are candidates for precisely the
 systems this assumption overlooks (`Q-08`).
 
-### A-10 — The sub-threshold band is small enough to leave undefined
+### A-10 — The excluded band is small enough to leave undefined
 
-**Status:** untested
+**Status:** refuted by `2026-10-05-promotion-overlap-measure`
 **We assume:** fields overlapping a hand-drawn label by more than zero but less
 than the promotion threshold are few enough that having no training examples and
 no agreed label for them does not materially affect production accuracy.
@@ -177,6 +177,12 @@ anyone measured how large it is.
 **If wrong:** a meaningful share of the fields we score in production fall in a
 region where model behaviour is undefined and unvalidated.
 **How we would find out:** count them. One query.
+**What we found:** 730 fields under the original rule, against 714 positives —
+more fields undefined than labeled. `D-02` reduced it to 582 by promoting the
+genuine partial-coverage cases the old measure had misclassified, which is a
+third of the way down but not to "few enough". The band is still comparable in
+size to two thirds of the positive set, and every one of those fields is scored
+at inference. `Q-03` still has to decide what happens to them.
 
 ## Detectability
 
