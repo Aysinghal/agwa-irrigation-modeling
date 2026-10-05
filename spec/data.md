@@ -63,7 +63,7 @@ Those hand-drawn polygons are not the training positives. Converting them onto
 consistent geometry needs a rule for which CDL fields a label promotes, and
 that rule is `D-02`: a field becomes a **positive field**, class 1, if at least
 0.15 of the label falls inside it, or at least 0.65 of it lies under the label.
-A field satisfying neither is a sliver and enters the excluded band (`Q-03`).
+A field satisfying neither is a sliver and enters the excluded band (`D-03`).
 
 Two measures because labels are inconsistent about what they trace (below);
 either alone discards a different group of irrigated fields.

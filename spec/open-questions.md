@@ -46,23 +46,6 @@ whether any labeled linear-move examples exist to test against. Note that none
 currently do, so a pilot needs labels created first. USGS iMaps 2020 and 2023
 are available by county.
 
-## Q-03 — How should the excluded overlap band be labeled?
-
-**Status:** open
-**The question:** what happens to fields a hand-drawn label touches without
-satisfying either promotion condition in `D-02`?
-**Why it matters:** these fields are currently in neither class and absent from
-training, yet they are scored at inference (`data.md`). The answer determines
-whether the dataset has to be regenerated, which is far cheaper to establish
-before training than after.
-**Options:** leave them excluded; lower one of the `D-02` thresholds; treat the
-band as an explicit ignore class, excluded from training but reported separately
-at inference; hand-relabel the band.
-**What would settle it:** counting it refuted `A-10` — the band is comparable
-in size to the positive set (`data.md`). A field enters it only by failing both
-`D-02` measures, so what remains should be mostly label slivers rather than
-genuine partial coverage. Confirming that on a sample is what is left.
-
 ## Q-04 — Three channels or four?
 
 **Status:** open
@@ -76,31 +59,6 @@ modified first layer, initialising the new channel from the pretrained weights;
 RGB plus an NIR-derived index supplied separately.
 **What would settle it:** an ablation once any baseline exists. Both are cheap
 to run and the answer is empirical.
-
-## Q-05 — Should an inter-rater agreement round be run?
-
-**Status:** open
-**The question:** should labeling capacity be spent having several labelers
-relabel the same sample of fields, to measure how much they agree?
-**Why it matters:** A-03 is untested, and without a round there is no number for
-label noise — a gap a reviewer will ask about. The cost is real: the labeling
-effort is otherwise complete, so this is new work rather than a reallocation.
-Two entries have since shown labelers diverging sharply on adjacent judgments,
-so the expected disagreement is no longer hypothetical; see the evidence listed
-under `A-03`.
-**Options:** no round; a small round on a sample, all labelers; a round on
-positives only, where errors are most consequential; or a targeted round that
-doubles as a measurement — re-review a sample of one labeler's confirmed
-negatives using a labeler with a high truss-detection rate, and re-label the
-skipped positive points (`data.md`).
-**What would settle it:** whether the resulting number would change anything.
-That test now has answers it did not have before. A round would size two
-quantities the project already needs and cannot otherwise obtain: how many
-positives were lost to skip-threshold variation (`A-04`, refuted) and how many
-trusses sit undetected in the negative set (`data.md`). Both feed directly into
-reported precision and recall, so the number would be acted on rather than only
-reported. The last option is the cheapest route to both and to an agreement
-figure at the same time.
 
 ## Q-06 — Multiple Instance Learning, or a whole-field classifier?
 
