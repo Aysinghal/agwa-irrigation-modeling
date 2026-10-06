@@ -104,13 +104,15 @@ Two later scripts run locally rather than in Earth Engine:
 | # | File | Produces |
 |---|---|---|
 | 9 | `scripts/build_label_table.py` | `data/labels.csv`, `data/labels.geojson` |
-| 10 | `scripts/build_review_queues.py` | `data/review_queues.csv`, `data/review_queues.geojson` |
+| 10 | `scripts/build_review_queues.py` | `data/review_queues.csv`, `data/review_queues_upload.csv` |
 
 Script 10 builds the round-2 review queues `D-03` decides the shape of, and
-assigns them. Its geojson is uploaded as `assignments/review_queues_md_v2` and
-carries geometry, so the interfaces need no join.
+assigns them. `review_queues_upload.csv` is ingested as
+`assignments/review_queues_md_v2`, with `wkt` as the geometry column — the Code
+Editor's table uploader takes CSV or shapefile, not GeoJSON. It carries
+geometry, so the interfaces need no join.
 
-The geojson carries only the columns a labeler may see — `is_shared`, `origin`
+The upload carries only the columns a labeler may see — `is_shared`, `origin`
 and `round1_labeler` stay in the local CSV, since a labeler can inspect any
 asset their script loads and `D-03` requires the shared subset to be
 indistinguishable from the rest of their queue.
@@ -195,8 +197,8 @@ each cluster makes available.
 Only irreplaceable data is committed. `data/raw/` holds the human labels, which
 nothing can regenerate. The CDL exports under the same directory are
 deterministic outputs of `gee/labeling/` and are gitignored, as are
-`data/labels.geojson` and `data/review_queues.geojson`, which Scripts 9 and 10
-rebuild.
+`data/labels.geojson` and `data/review_queues_upload.csv`, which Scripts 9 and
+10 rebuild.
 
 `data/review_queues.csv` is committed even though Script 10 is deterministic.
 Who reviewed which field is what makes a second opinion second, and the

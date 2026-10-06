@@ -100,7 +100,8 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from shapely.geometry import Polygon, mapping, shape
+from shapely import set_precision
+from shapely.geometry import Polygon, shape
 from shapely.strtree import STRtree
 
 # ---------------------------------------------------------------- config
@@ -459,8 +460,10 @@ with csv_path.open("w", newline="", encoding="utf-8") as fh:
     writer.writerows(rows)
 log(f"  {csv_path.relative_to(ROOT)}  {len(rows):,} rows")
 
-# Geometry for the Earth Engine upload. Regenerable, so gitignored — the same
-# split as labels.csv against labels.geojson.
+# The Earth Engine upload. WKT in a CSV column rather than GeoJSON, because the
+# Code Editor's table uploader takes CSV or shapefile and not GeoJSON.
+# Regenerable, so gitignored — the same split as labels.csv against
+# labels.geojson.
 #
 # Only UPLOAD_FIELDS travel to Earth Engine. is_shared, origin and
 # round1_labeler stay in the local CSV: a labeler can inspect any asset their
@@ -468,23 +471,26 @@ log(f"  {csv_path.relative_to(ROOT)}  {len(rows):,} rows")
 # from the rest of their queue. origin would also tell them what the promotion
 # script had concluded, which is the judgement being re-collected. The ingest
 # recovers all three by joining on field_id.
-geo_path = OUT / "review_queues.geojson"
-feats = []
+upload_path = OUT / "review_queues_upload.csv"
 missing = 0
-for r in rows:
-    idx = key_to_index.get(r["field_id"])
-    if idx is None:
-        missing += 1
-        continue
-    feats.append({
-        "type": "Feature",
-        "geometry": mapping(cdl_geoms[idx]),
-        "properties": {k: r[k] for k in UPLOAD_FIELDS},
-    })
+written = 0
+with upload_path.open("w", newline="", encoding="utf-8") as fh:
+    writer = csv.writer(fh)
+    writer.writerow(["wkt"] + UPLOAD_FIELDS)
+    for r in rows:
+        idx = key_to_index.get(r["field_id"])
+        if idx is None:
+            missing += 1
+            continue
+        # Rounded to the D-01 key precision, about 0.11 m. Full float repr
+        # roughly doubles the file for digits no 30 m polygon carries.
+        geom = set_precision(cdl_geoms[idx], 1e-6)
+        writer.writerow([geom.wkt] + [r[k] for k in UPLOAD_FIELDS])
+        written += 1
 if missing:
     log(f"  !! {missing} rows had no CDL geometry and are absent from the upload")
-with geo_path.open("w", encoding="utf-8") as fh:
-    json.dump({"type": "FeatureCollection", "features": feats}, fh)
-log(f"  {geo_path.relative_to(ROOT)}  {len(feats):,} features")
+size_mb = upload_path.stat().st_size / 1048576
+log(f"  {upload_path.relative_to(ROOT)}  {written:,} rows, {size_mb:.1f} MB")
+log(f"    upload as a CSV table, geometry column 'wkt'")
 
 log("\nDone.")
