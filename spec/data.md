@@ -140,7 +140,15 @@ input distribution has no training examples and no agreed correct answer. It is
 also where the hardest cases live, since a field a truss partly reaches may
 genuinely be irrigated. The threshold cannot distinguish a label sliver from
 real partial coverage, so it may be discarding true positives rather than only
-artifacts. How that band should be labeled is an open question.
+artifacts. `D-03` puts every field in that band to a labeler directly.
+
+**The negative contamination figure is understated.** Negative candidates were
+dealt in unequal queues, 40 to 201 per labeler, and queue size ran opposite to
+truss-detection rate. Weighting the seven labelers equally rather than by queue
+size moves the measured rate from 1.90 to 2.40 per 100
+(`2026-10-05-negative-queue-allocation`). The allocation predates any detection
+rate, so the skew is accidental, but it means the low end of the 1-3% range
+above is the less likely one. Round 2 deals evenly (`D-03`).
 
 **Center-pivot only.** Linear-move and drip systems are absent from the positive
 set by construction, and fields using them may sit in the negative set labeled

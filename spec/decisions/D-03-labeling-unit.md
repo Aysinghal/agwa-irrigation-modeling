@@ -69,24 +69,33 @@ are what both round-1 log entries were built from.
 marker and no label, which is how the 19 truss-bearing fields in
 `2026-09-17-negative-pass-rejections` left the dataset.
 
-**Two queues, two interfaces.** Positive re-check presents fields drawn from the
-positive pass and overlays the legacy pivot outline, because the question is
-which field a known pivot sits on. Negative re-check presents fields from the
+**Two queues, two interfaces.** Positive re-check presents every CDL field a
+round-1 hand-drawn label touched, plus the 103 fields underlying the 87 skipped
+pivots, and overlays the legacy pivot outline, because the question is which
+field a known pivot sits on. Negative re-check presents fields from the
 negative pass with no overlay, because the question is whether a truss is there
 at all. The overlay reveals which queue a field belongs to, so one mixed
 interface would blind nobody and is not worth the complexity.
 
-**Each queue carries its own shared subset**, assigned to every labeler and
-indistinguishable from the rest of their queue. Agreement on "which field is
-this pivot on" and agreement on "is there a truss here" are different
-quantities, and the second is the one the contamination estimate rests on.
-Announcing the subset would measure best effort rather than ordinary effort.
+**Each queue carries its own shared subset**, assigned to every labeler but the
+field's own round-1 one, and indistinguishable from the rest of their queue.
+The queues ask different questions, so the subsets measure different things:
+Queue A's carries trusses at a high rate and yields agreement on truss
+judgement, while Queue B's, at the contamination rate in `data.md`, expects one
+or two truss-bearing fields and yields agreement on empty-field judgement
+instead. The contamination rate itself comes from the full Queue B pass, not
+from its subset. Announcing either would measure best effort rather than
+ordinary effort.
 
 **No labeler receives a field they judged in round 1.** The round-1 exports
 carry `labeler` on every row, so this is enforced when queues are built.
 
-Assignment follows round 1: a weighted per-person split under a fixed seed, one
-shuffled queue each, and a committed assignment table.
+Assignment is an **even** per-person split under a fixed seed, one shuffled
+queue each, and a committed assignment table. Round 1 split the negative pass by
+workload, 40 fields to 201, and that spread is what left its truss-detection
+test unusable (`2026-10-05-negative-queue-allocation`). This round exists to
+measure labeler behaviour, so comparable n per person is the point rather than a
+nicety.
 
 **Fields the negative re-check finds a truss on are parked, not dropped and not
 blended.** They are tagged by provenance and kept distinguishable, as the 13 in
@@ -96,28 +105,35 @@ only probe for the Eastern Shore bias.
 ## Consequences
 
 **Promotion stops applying to new labels.** `D-02` is not superseded — it
-records how today's positives were derived — but its reach shrinks. Once human
-answers land on the 461 fields a single `D-02` measure decided, it governs only
-the 407 where both measures agreed.
+records how today's positives were derived — but once the round lands it governs
+no field's class. The queue covers every field a round-1 label touched, the 407
+both measures agreed on included. Two measures agreeing establishes which field
+a blob maps to and says nothing about whether a truss is there; that claim is
+`A-19`, and it rests on one person looking once after being shown a legacy-map
+pin asserting a pivot was present. Excluding the 407 would leave the largest
+block of positives as the one group nobody re-checked. Sampling them was the
+alternative and is worse: a rate does not fix labels, so any non-zero result
+forces reviewing the rest anyway.
 
 **`Q-03` and `Q-05` are resolved and come off the open list.** The band is
 hand-relabeled, which was one of `Q-03`'s options; the shared subsets are the
 round `Q-05` asked about, obtained as part of work already needed rather than as
 new spend.
 
-**Two assumptions become measurable.** `A-03` gets an agreement figure from the
-shared subsets. `A-04`'s unquantified gap gets sized by the 87 skipped points,
-which enter the positive queue.
+**Three assumptions become measurable.** `A-03` gets an agreement figure from
+the shared subsets. `A-04`'s unquantified gap gets sized by the 87 skipped
+points, which enter the positive queue. `A-19` is answered outright, since every
+field promotion decided is put to a person.
 
 **The ambiguity that caused the promotion bug ceases to exist.** Whether to
 trace the field outline or the pivot circle is no longer a question anyone can
 answer wrongly, because nobody draws.
 
-**Cost is people-time.** The positive queue is 576 band fields plus 461
-single-measure positives plus however many CDL fields underlie the 87 skipped
-points, which is not yet counted. The negative queue is 933. Answering is faster
-than drawing, but this is a second round of volunteer labor and it is the
-critical path.
+**Cost is people-time.** 2,480 fields — 1,547 in the positive queue, 933 in the
+negative one — and 3,080 judgements once the shared subsets are counted, which
+is 435 to 448 per labeler. Round 1 was about 1,780 judgements, each requiring a
+polygon to be drawn. Answering is much faster than drawing, but this is a second
+round of volunteer labor and it is the critical path.
 
 **A second round means a second set of labeler thresholds.** Four answers make
 divergence visible rather than preventing it. The per-labeler rate checks that

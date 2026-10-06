@@ -80,6 +80,22 @@ dealt queues (`data.md`), so the decision turns on where each set their
 threshold. The **If wrong** consequence holds, by a mechanism the stated test
 could not detect.
 
+### A-19 — Promotion put each label on the field the labeler meant
+
+**Status:** untested
+**We assume:** where a script converted a hand-drawn blob into labels on CDL
+fields, it selected the fields the labeler was pointing at.
+**Why:** labelers drew around a field rather than naming one, so something had
+to make the assignment, and `D-02` is the rule that does.
+**If wrong:** positives carry the wrong geometry — a truss attributed to a
+neighbouring field, or a field labeled 1 with no truss on it — and the model is
+trained to recognise whatever is in the wrong polygon.
+**How we would find out:** `D-03` asks a labeler the question directly for every
+field a round-1 label touched, which replaces the rule with a human answer.
+**Note:** `D-02`'s two measures agreeing establishes which field a blob maps to
+and nothing about whether a truss is present. The 407 fields both measures
+promoted carry the same single unreplicated truss judgement as the rest.
+
 ## Field geometry
 
 ### A-05 — CDL polygons approximate real fields well enough

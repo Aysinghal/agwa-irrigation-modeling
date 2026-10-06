@@ -99,6 +99,18 @@ their header comments; the filenames are not ordered, so the mapping is:
 happen in `scripts/build_label_table.py` under `D-02`. Both stay as a record
 and are not rerun. `gee/export/` moves the inputs out.
 
+Two later scripts run locally rather than in Earth Engine:
+
+| # | File | Produces |
+|---|---|---|
+| 9 | `scripts/build_label_table.py` | `data/labels.csv`, `data/labels.geojson` |
+| 10 | `scripts/build_review_queues.py` | `data/review_queues.csv`, `data/review_queues.geojson` |
+
+Script 10 builds the round-2 review queues `D-03` decides the shape of, and
+assigns them. Its geojson is uploaded as an Earth Engine table for the round-2
+labeling interfaces to read; the interfaces join it to `cdl_fields_md_2022` on
+the `D-01` centroid key, since that asset carries no `field_id` of its own.
+
 Scripts 2 and 7 are per-labeler: each person set `USER` at the top and ran their
 own queue. Both batch up to ten decisions before requiring the Earth Engine
 Tasks tab to be run.
@@ -160,13 +172,19 @@ each cluster makes available.
 | `research-log/` | Dated entries |
 | `gee/labeling/` | Vendored labeling code. A record, never modified in place. |
 | `gee/export/` | Scripts that pull assets out of Earth Engine |
-| `scripts/` | Local processing. `build_label_table.py` builds the label table. |
+| `scripts/` | Local processing. Scripts 9 and 10. |
 | `data/raw/` | Earth Engine exports, as exported |
-| `data/` | `labels.csv`, the assembled table every later stage reads |
+| `data/` | `labels.csv`, the assembled table every later stage reads, and `review_queues.csv` |
 
 Only irreplaceable data is committed. `data/raw/` holds the human labels, which
 nothing can regenerate. The CDL exports under the same directory are
-deterministic outputs of `gee/labeling/` and are gitignored, as is
-`data/labels.geojson`, which `scripts/build_label_table.py` rebuilds.
+deterministic outputs of `gee/labeling/` and are gitignored, as are
+`data/labels.geojson` and `data/review_queues.geojson`, which Scripts 9 and 10
+rebuild.
+
+`data/review_queues.csv` is committed even though Script 10 is deterministic.
+Who reviewed which field is what makes a second opinion second, and the
+per-labeler rate checks need the mapping intact, so a change to it has to show
+up in a diff.
 
 Layout for training code is not yet established.
