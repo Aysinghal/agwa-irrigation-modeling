@@ -107,9 +107,25 @@ Two later scripts run locally rather than in Earth Engine:
 | 10 | `scripts/build_review_queues.py` | `data/review_queues.csv`, `data/review_queues.geojson` |
 
 Script 10 builds the round-2 review queues `D-03` decides the shape of, and
-assigns them. Its geojson is uploaded as an Earth Engine table for the round-2
-labeling interfaces to read; the interfaces join it to `cdl_fields_md_2022` on
-the `D-01` centroid key, since that asset carries no `field_id` of its own.
+assigns them. Its geojson is uploaded as `assignments/review_queues_md_v2` and
+carries geometry, so the interfaces need no join.
+
+The geojson carries only the columns a labeler may see — `is_shared`, `origin`
+and `round1_labeler` stay in the local CSV, since a labeler can inspect any
+asset their script loads and `D-03` requires the shared subset to be
+indistinguishable from the rest of their queue.
+
+Round 2 adds two Earth Engine scripts, which read that asset:
+
+| # | File | Produces |
+|---|---|---|
+| 11 | `review_positive.js` | `review_labels_a/<user>/…`, `review_progress_a/<user>/…` |
+| 12 | `review_negative.js` | `review_labels_b/<user>/…`, `review_progress_b/<user>/…` |
+
+Both are per-labeler and batch ten decisions, as Scripts 2 and 7 did. Assets are
+named `item_<queue_index>_<answer>`: a `D-01` field_id opens with a minus sign
+and holds an underscore, which neither an asset id nor Script 7's name-parsing
+regex tolerates, so field_id travels as a property.
 
 Scripts 2 and 7 are per-labeler: each person set `USER` at the top and ran their
 own queue. Both batch up to ten decisions before requiring the Earth Engine

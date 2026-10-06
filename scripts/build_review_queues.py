@@ -409,6 +409,11 @@ FIELDS = [
     "area_m2", "crop_class",
 ]
 
+# What the labeling interfaces are allowed to see. See the upload note below.
+UPLOAD_FIELDS = [
+    "field_id", "queue", "assigned_to", "queue_index", "area_m2", "crop_class",
+]
+
 rows: list[dict] = []
 for u in LABELERS:
     # Shared fields are mixed into the solo ones and the whole queue is shuffled,
@@ -440,6 +445,13 @@ log(f"  {csv_path.relative_to(ROOT)}  {len(rows):,} rows")
 
 # Geometry for the Earth Engine upload. Regenerable, so gitignored — the same
 # split as labels.csv against labels.geojson.
+#
+# Only UPLOAD_FIELDS travel to Earth Engine. is_shared, origin and
+# round1_labeler stay in the local CSV: a labeler can inspect any asset their
+# script loads, and D-03 requires the shared subset to be indistinguishable
+# from the rest of their queue. origin would also tell them what the promotion
+# script had concluded, which is the judgement being re-collected. The ingest
+# recovers all three by joining on field_id.
 geo_path = OUT / "review_queues.geojson"
 feats = []
 missing = 0
@@ -451,7 +463,7 @@ for r in rows:
     feats.append({
         "type": "Feature",
         "geometry": mapping(cdl_geoms[idx]),
-        "properties": {k: r[k] for k in FIELDS},
+        "properties": {k: r[k] for k in UPLOAD_FIELDS},
     })
 if missing:
     log(f"  !! {missing} rows had no CDL geometry and are absent from the upload")
