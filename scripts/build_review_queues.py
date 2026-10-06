@@ -113,17 +113,15 @@ LABELERS = ["ayush", "maddie", "mara", "mike", "sienna", "taryn", "tien"]
 
 # Relative shares, not counts. Round 1 hard-coded counts and needed a sanity
 # check that they summed to the queue size; shares survive a queue that changes
-# size. Same shape as negative_assignment.js — the people carrying less of the
-# code carry more of the labeling.
-WEIGHTS = {
-    "maddie": 5,
-    "tien": 5,
-    "taryn": 5,
-    "sienna": 3,
-    "mara": 3,
-    "mike": 3,
-    "ayush": 1,
-}
+# size.
+#
+# Even, unlike round 1's negative pass, which ran 40 fields to 201 by labeler on
+# a workload-fairness argument. That spread is what made its truss-detection
+# test unusable — 2026-09-17-negative-pass-rejections reports expected counts
+# below 5 in every cell. The positive pass was even and its skip-rate test came
+# out conclusive on the same seven people. Round 2 exists to measure labeler
+# behaviour, so equal n is the point rather than a nicety.
+WEIGHTS = {u: 1 for u in LABELERS}
 
 # Agreement statistics stabilise around 50-100 items. Each shared field costs
 # six extra judgements, so this is the main lever on total cost; the run prints
