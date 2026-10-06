@@ -365,30 +365,46 @@ log(f"  judgements: {len(solo):,} solo + {shared_judgments:,} shared = "
 log("\nAssigning...")
 
 weight_total = sum(WEIGHTS[u] for u in LABELERS)
-target = {u: len(solo) * WEIGHTS[u] / weight_total for u in LABELERS}
-placed = {u: 0 for u in LABELERS}
 assignments: dict[str, list[str]] = defaultdict(list)
-
-order = solo[:]
-rng.shuffle(order)
-
+placed: dict[str, Counter[str]] = {u: Counter() for u in LABELERS}
 over_quota = 0
-for fid in order:
-    round1 = queued[fid]["round1_labeler"]
-    eligible = [u for u in LABELERS if u != round1] or LABELERS[:]
-    # The most under-quota eligible person, measured as a share of their own
-    # target so the weighting holds rather than the raw count.
-    pick = min(eligible, key=lambda u: placed[u] / target[u] if target[u] else 1e9)
-    if placed[pick] >= target[pick]:
-        over_quota += 1
-    assignments[pick].append(fid)
-    placed[pick] += 1
 
-log(f"  {'labeler':<9} {'target':>7} {'solo':>7} {'shared':>7} {'total':>7}")
+# Balanced within each queue, not across the pair. Balancing only the combined
+# total lets round 1's uneven negative allocation back in: no-self-review bars
+# tien from 193 Queue B fields and ayush from 37, so filling equal totals draws
+# tien's shortfall out of Queue A and hands ayush the Queue B surplus. Queue B
+# exists to measure per-labeler truss detection, which needs comparable n in
+# that queue specifically.
+targets: dict[str, dict[str, float]] = {}
+for q in ("A", "B"):
+    solo_q = [fid for fid in solo if queued[fid]["queue"] == q]
+    targets[q] = {u: len(solo_q) * WEIGHTS[u] / weight_total for u in LABELERS}
+
+    order = solo_q[:]
+    rng.shuffle(order)
+
+    for fid in order:
+        round1 = queued[fid]["round1_labeler"]
+        eligible = [u for u in LABELERS if u != round1] or LABELERS[:]
+        # The most under-quota eligible person, measured as a share of their own
+        # target so the weighting holds rather than the raw count.
+        pick = min(
+            eligible,
+            key=lambda u: placed[u][q] / targets[q][u] if targets[q][u] else 1e9,
+        )
+        if placed[pick][q] >= targets[q][pick]:
+            over_quota += 1
+        assignments[pick].append(fid)
+        placed[pick][q] += 1
+
+log(f"  {'labeler':<9} {'A':>6} {'B':>6} {'shared':>7} {'total':>7}")
 for u in LABELERS:
     n_shared = sum(1 for fid in shared if queued[fid]["round1_labeler"] != u)
-    log(f"  {u:<9} {target[u]:>7.0f} {placed[u]:>7,} {n_shared:>7,} "
-        f"{placed[u] + n_shared:>7,}")
+    total = placed[u]["A"] + placed[u]["B"] + n_shared
+    log(f"  {u:<9} {placed[u]['A']:>6,} {placed[u]['B']:>6,} {n_shared:>7,} "
+        f"{total:>7,}")
+log(f"  per-queue solo targets: A {targets['A'][LABELERS[0]]:.0f}, "
+    f"B {targets['B'][LABELERS[0]]:.0f}")
 log(f"  solo fields placed over quota to respect no-self-review: {over_quota:,}")
 
 violations = sum(

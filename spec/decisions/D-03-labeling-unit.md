@@ -90,12 +90,17 @@ ordinary effort.
 **No labeler receives a field they judged in round 1.** The round-1 exports
 carry `labeler` on every row, so this is enforced when queues are built.
 
-Assignment is an **even** per-person split under a fixed seed, one shuffled
-queue each, and a committed assignment table. Round 1 split the negative pass by
-workload, 40 fields to 201, and that spread is what left its truss-detection
-test unusable (`2026-10-05-negative-queue-allocation`). This round exists to
-measure labeler behaviour, so comparable n per person is the point rather than a
-nicety.
+Assignment is an **even** per-person split **within each queue** under a fixed
+seed, one shuffled queue each, and a committed assignment table. Round 1 split
+the negative pass by workload, 40 fields to 201, and that spread is what left
+its truss-detection test unusable
+(`2026-10-05-negative-queue-allocation`). This round exists to measure labeler
+behaviour, so comparable n per person is the point rather than a nicety.
+
+Within each queue rather than across the pair, because no-self-review otherwise
+readmits the round-1 imbalance: it bars `tien` from 193 Queue B fields and
+`ayush` from 37, so equalising only the combined total draws `tien`'s shortfall
+out of Queue A and hands `ayush` the Queue B surplus.
 
 **Fields the negative re-check finds a truss on are parked, not dropped and not
 blended.** They are tagged by provenance and kept distinguishable, as the 13 in
