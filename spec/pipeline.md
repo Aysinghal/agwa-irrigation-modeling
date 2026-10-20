@@ -99,6 +99,36 @@ their header comments; the filenames are not ordered, so the mapping is:
 happen in `scripts/build_label_table.py` under `D-02`. Both stay as a record
 and are not rerun. `gee/export/` moves the inputs out.
 
+Two later scripts run locally rather than in Earth Engine:
+
+| # | File | Produces |
+|---|---|---|
+| 9 | `scripts/build_label_table.py` | `data/labels.csv`, `data/labels.geojson` |
+| 10 | `scripts/build_review_queues.py` | `data/review_queues.csv`, `data/review_queues_upload.csv` |
+
+Script 10 builds the round-2 review queues `D-03` decides the shape of, and
+assigns them. `review_queues_upload.csv` is ingested as
+`assignments/review_queues_md_v2`, with `wkt` as the geometry column — the Code
+Editor's table uploader takes CSV or shapefile, not GeoJSON. It carries
+geometry, so the interfaces need no join.
+
+The upload carries only the columns a labeler may see — `is_shared`, `origin`
+and `round1_labeler` stay in the local CSV, since a labeler can inspect any
+asset their script loads and `D-03` requires the shared subset to be
+indistinguishable from the rest of their queue.
+
+Round 2 adds two Earth Engine scripts, which read that asset:
+
+| # | File | Produces |
+|---|---|---|
+| 11 | `review_positive.js` | `review_labels_a/<user>/…`, `review_progress_a/<user>/…` |
+| 12 | `review_negative.js` | `review_labels_b/<user>/…`, `review_progress_b/<user>/…` |
+
+Both are per-labeler and batch ten decisions, as Scripts 2 and 7 did. Assets are
+named `item_<queue_index>_<answer>`: a `D-01` field_id opens with a minus sign
+and holds an underscore, which neither an asset id nor Script 7's name-parsing
+regex tolerates, so field_id travels as a property.
+
 Scripts 2 and 7 are per-labeler: each person set `USER` at the top and ran their
 own queue. Both batch up to ten decisions before requiring the Earth Engine
 Tasks tab to be run.
@@ -160,13 +190,19 @@ each cluster makes available.
 | `research-log/` | Dated entries |
 | `gee/labeling/` | Vendored labeling code. A record, never modified in place. |
 | `gee/export/` | Scripts that pull assets out of Earth Engine |
-| `scripts/` | Local processing. `build_label_table.py` builds the label table. |
+| `scripts/` | Local processing. Scripts 9 and 10. |
 | `data/raw/` | Earth Engine exports, as exported |
-| `data/` | `labels.csv`, the assembled table every later stage reads |
+| `data/` | `labels.csv`, the assembled table every later stage reads, and `review_queues.csv` |
 
 Only irreplaceable data is committed. `data/raw/` holds the human labels, which
 nothing can regenerate. The CDL exports under the same directory are
-deterministic outputs of `gee/labeling/` and are gitignored, as is
-`data/labels.geojson`, which `scripts/build_label_table.py` rebuilds.
+deterministic outputs of `gee/labeling/` and are gitignored, as are
+`data/labels.geojson` and `data/review_queues_upload.csv`, which Scripts 9 and
+10 rebuild.
+
+`data/review_queues.csv` is committed even though Script 10 is deterministic.
+Who reviewed which field is what makes a second opinion second, and the
+per-labeler rate checks need the mapping intact, so a change to it has to show
+up in a diff.
 
 Layout for training code is not yet established.

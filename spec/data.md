@@ -63,7 +63,7 @@ Those hand-drawn polygons are not the training positives. Converting them onto
 consistent geometry needs a rule for which CDL fields a label promotes, and
 that rule is `D-02`: a field becomes a **positive field**, class 1, if at least
 0.15 of the label falls inside it, or at least 0.65 of it lies under the label.
-A field satisfying neither is a sliver and enters the excluded band (`Q-03`).
+A field satisfying neither is a sliver and enters the excluded band (`D-03`).
 
 Two measures because labels are inconsistent about what they trace (below);
 either alone discards a different group of irrigated fields.
@@ -101,9 +101,10 @@ Built by `scripts/build_label_table.py` from the exports in `data/raw/`.
 | Prevalence over all CDL fields | 2.35% |
 | Median field area, positive / negative | 23.7 / 3.7 ha |
 
-The 881 positives come from 635 distinct hand-drawn labels, since one label can
+The 881 positives come from 574 distinct hand-drawn labels, since one label can
 promote several fields. That grouping is what the split requirement in
-`evaluation.md` acts on. 868 trace to the legacy seed and 13 to the negative
+`evaluation.md` acts on; across the positives and the excluded band together it
+spans 635 labels. 868 trace to the legacy seed and 13 to the negative
 pass. By promotion condition: 246 label share only, 215 field coverage only,
 407 both.
 
@@ -139,7 +140,15 @@ input distribution has no training examples and no agreed correct answer. It is
 also where the hardest cases live, since a field a truss partly reaches may
 genuinely be irrigated. The threshold cannot distinguish a label sliver from
 real partial coverage, so it may be discarding true positives rather than only
-artifacts. How that band should be labeled is an open question.
+artifacts. `D-03` puts every field in that band to a labeler directly.
+
+**The negative contamination figure is understated.** Negative candidates were
+dealt in unequal queues, 40 to 201 per labeler, and queue size ran opposite to
+truss-detection rate. Weighting the seven labelers equally rather than by queue
+size moves the measured rate from 1.90 to 2.40 per 100
+(`2026-10-05-negative-queue-allocation`). The allocation predates any detection
+rate, so the skew is accidental, but it means the low end of the 1-3% range
+above is the less likely one. Round 2 deals evenly (`D-03`).
 
 **Center-pivot only.** Linear-move and drip systems are absent from the positive
 set by construction, and fields using them may sit in the negative set labeled

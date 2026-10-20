@@ -61,7 +61,7 @@ the labeling interface still works.
 **Circumstantial evidence against:** labelers diverge sharply on both adjacent
 judgments, skip rate and truss detection (`A-04`, `data.md`). Status stays
 `untested`: no field was labeled twice, so there is no agreement to measure and
-none of this substitutes for the round in `Q-05`.
+none of this substitutes for the round in `D-03`.
 
 ### A-04 — Skips were not driven by difficulty
 
@@ -79,6 +79,22 @@ scene, as assumed, but skip rate varies elevenfold across labelers on randomly
 dealt queues (`data.md`), so the decision turns on where each set their
 threshold. The **If wrong** consequence holds, by a mechanism the stated test
 could not detect.
+
+### A-19 — Promotion put each label on the field the labeler meant
+
+**Status:** untested
+**We assume:** where a script converted a hand-drawn blob into labels on CDL
+fields, it selected the fields the labeler was pointing at.
+**Why:** labelers drew around a field rather than naming one, so something had
+to make the assignment, and `D-02` is the rule that does.
+**If wrong:** positives carry the wrong geometry — a truss attributed to a
+neighbouring field, or a field labeled 1 with no truss on it — and the model is
+trained to recognise whatever is in the wrong polygon.
+**How we would find out:** `D-03` asks a labeler the question directly for every
+field a round-1 label touched, which replaces the rule with a human answer.
+**Note:** `D-02`'s two measures agreeing establishes which field a blob maps to
+and nothing about whether a truss is present. The 407 fields both measures
+promoted carry the same single unreplicated truss judgement as the rest.
 
 ## Field geometry
 
@@ -170,7 +186,7 @@ region where model behaviour is undefined and unvalidated.
 **How we would find out:** count them. One query.
 **What we found:** the band is comparable in size to the positive set
 (`data.md`). Not few enough, and every one of those fields is scored at
-inference. `Q-03` has to decide what happens to them.
+inference. `D-03` relabels them by hand.
 
 ## Detectability
 
